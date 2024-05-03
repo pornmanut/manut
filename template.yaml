@@ -9,7 +9,7 @@ Resources:
       DistributionConfig:
         Enabled: true
         Origins:
-          - DomainName: !GetAtt StaticWebsiteBucket.DomainName
+          - DomainName: !GetAtt StaticWebsiteBucket.RegionalDomainName
             Id: S3Origin
             S3OriginConfig:
               OriginAccessIdentity: !Sub origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}
