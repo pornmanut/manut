@@ -9,10 +9,12 @@ Resources:
       DistributionConfig:
         Enabled: true
         Aliases:
-          - manut.dev
+          - "manut.dev"
+          - "*.manut.dev"
         ViewerCertificate:
-          AcmCertificateArn: arn:aws:acm:us-east-1:668933070809:certificate/30d44a2f-058c-43a2-a5e0-038fefcec05e
+          AcmCertificateArn: arn:aws:acm:us-east-1:668933070809:certificate/4992578c-fa73-47cf-8424-3bf7481517d6
           SslSupportMethod: sni-only
+          MinimumProtocolVersion: TLSv1.2_2021
         Origins:
           - DomainName: !GetAtt StaticWebsiteBucket.RegionalDomainName
             Id: S3Origin
@@ -34,6 +36,7 @@ Resources:
           MaxTTL: 3600
           DefaultTTL: 3600
           MinTTL: 0
+        PriceClass: PriceClass_100
 
   CloudFrontOriginAccessIdentity:
     Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
