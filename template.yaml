@@ -8,6 +8,11 @@ Resources:
     Properties:
       DistributionConfig:
         Enabled: true
+        Aliases:
+          - manut.dev
+        ViewerCertificate:
+          AcmCertificateArn: arn:aws:acm:us-east-1:668933070809:certificate/30d44a2f-058c-43a2-a5e0-038fefcec05e
+          SslSupportMethod: sni-only
         Origins:
           - DomainName: !GetAtt StaticWebsiteBucket.RegionalDomainName
             Id: S3Origin
