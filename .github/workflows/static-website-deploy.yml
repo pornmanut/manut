@@ -18,6 +18,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          submodules: "recursive"
+          fetch-depth: 0
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -32,7 +35,7 @@ jobs:
           # extended: true
 
       - name: Build
-        run: make build
+        run: hugo --minify
 
       - name: Copy to S3
         run: aws s3 cp public ${{ vars.S3_BUCKET_URL }} --recursive
