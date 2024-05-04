@@ -25,8 +25,14 @@ jobs:
           role-to-assume: ${{ env.ROLE_TO_ASSUME }}
           aws-region: ${{ env.AWS_REGION }}
 
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: "0.125.5"
+          # extended: true
+
       - name: Build
         run: make build
 
       - name: Copy to S3
-        run: aws s3 cp build ${{ vars.S3_BUCKET_URL }} --recursive
+        run: aws s3 cp public ${{ vars.S3_BUCKET_URL }} --recursive
