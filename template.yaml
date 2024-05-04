@@ -50,7 +50,7 @@ Resources:
       BucketName: !Sub "${AWS::StackName}-static-website-bucket"
       PublicAccessBlockConfiguration:
         BlockPublicAcls: false
-        IgnorePublicAcls: true
+        IgnorePublicAcls: false
         BlockPublicPolicy: true
         RestrictPublicBuckets: false
 
