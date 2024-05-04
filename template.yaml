@@ -26,13 +26,13 @@ Resources:
           MinimumProtocolVersion: TLSv1.2_2021
         Origins:
           - DomainName: !GetAtt StaticWebsiteBucket.RegionalDomainName
-            Id: S3Origin
+            Id: !Sub "${AWS::StackName}-S3-manut-origin"
             OriginAccessControlId: !Ref WebsiteOriginAccessControl
             S3OriginConfig: {}
         DefaultRootObject: index.html
         DefaultCacheBehavior:
           Compress: true
-          TargetOriginId: S3Origin
+          TargetOriginId: "${AWS::StackName}-S3-manut-origin"
           AllowedMethods:
             - GET
             - HEAD
@@ -66,6 +66,8 @@ Resources:
     Properties:
       Bucket: !Ref StaticWebsiteBucket
       PolicyDocument:
+        Id: PolicyForCloudFrontPrivateContent
+        Version: "2012-10-17"
         Statement:
           - Sid: AllowCloudFrontServicePrincipal
             Effect: "Allow"
@@ -73,7 +75,7 @@ Resources:
               Service: cloudfront.amazonaws.com
             Action: "s3:GetObject"
             Resource:
-              - !Sub "arn:aws:s3:::${StaticWebsiteBucket}/*"
+              - !Sub "arn:aws:s3:::${AWS::StackName}-static-website-bucket/*"
             Condition:
               StringEquals:
                 AWS:SourceArn: !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${WebsiteCloudFrontDistribution}"
