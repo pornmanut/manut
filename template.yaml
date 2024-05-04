@@ -3,6 +3,15 @@ Transform: AWS::Serverless-2016-10-31
 Description: Sam template for manut.dev
 
 Resources:
+  WebsiteOriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub "${AWS::StackName}-origin-access-control"
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
   WebsiteCloudFrontDistribution:
     Type: AWS::CloudFront::Distribution
     Properties:
@@ -18,8 +27,8 @@ Resources:
         Origins:
           - DomainName: !GetAtt StaticWebsiteBucket.RegionalDomainName
             Id: S3Origin
-            S3OriginConfig:
-              OriginAccessIdentity: !Sub origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}
+            OriginAccessControlId: !Ref WebsiteOriginAccessControl
+            S3OriginConfig: {}
         DefaultRootObject: index.html
         DefaultCacheBehavior:
           Compress: true
@@ -37,22 +46,20 @@ Resources:
           DefaultTTL: 3600
           MinTTL: 0
         PriceClass: PriceClass_100
-
-  CloudFrontOriginAccessIdentity:
-    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
-    Properties:
-      CloudFrontOriginAccessIdentityConfig:
-        Comment: Origin Access Identity for S3 bucket
+        CustomErrorResponses:
+          - ErrorCode: 404
+            ResponseCode: 404
+            ResponsePagePath: /404.html
 
   StaticWebsiteBucket:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Sub "${AWS::StackName}-static-website-bucket"
       PublicAccessBlockConfiguration:
-        BlockPublicAcls: false
-        IgnorePublicAcls: false
+        BlockPublicAcls: true
+        IgnorePublicAcls: true
         BlockPublicPolicy: true
-        RestrictPublicBuckets: false
+        RestrictPublicBuckets: true
 
   StaticWebsiteBucketPolicy:
     Type: AWS::S3::BucketPolicy
@@ -60,13 +67,16 @@ Resources:
       Bucket: !Ref StaticWebsiteBucket
       PolicyDocument:
         Statement:
-          - Effect: "Allow"
+          - Sid: AllowCloudFrontServicePrincipal
+            Effect: "Allow"
+            Principal:
+              Service: cloudfront.amazonaws.com
             Action: "s3:GetObject"
             Resource:
               - !Sub "arn:aws:s3:::${StaticWebsiteBucket}/*"
-              - !Sub "arn:aws:s3:::${StaticWebsiteBucket}/posts/*"
-            Principal:
-              AWS: !Sub "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${CloudFrontOriginAccessIdentity}"
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${WebsiteCloudFrontDistribution}"
 
 Outputs:
   WebsiteCloudFrontDistribution:
