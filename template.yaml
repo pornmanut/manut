@@ -32,7 +32,7 @@ Resources:
         DefaultRootObject: index.html
         DefaultCacheBehavior:
           Compress: true
-          TargetOriginId: "${AWS::StackName}-S3-manut-origin"
+          TargetOriginId: !Sub "${AWS::StackName}-S3-manut-origin"
           AllowedMethods:
             - GET
             - HEAD
