@@ -62,7 +62,9 @@ Resources:
         Statement:
           - Effect: "Allow"
             Action: "s3:GetObject"
-            Resource: !Sub "arn:aws:s3:::${StaticWebsiteBucket}/*"
+            Resource:
+              - !Sub "arn:aws:s3:::${StaticWebsiteBucket}/*"
+              - !Sub "arn:aws:s3:::${StaticWebsiteBucket}/posts/*"
             Principal:
               AWS: !Sub "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${CloudFrontOriginAccessIdentity}"
 
