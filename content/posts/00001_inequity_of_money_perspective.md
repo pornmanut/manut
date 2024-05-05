@@ -5,7 +5,7 @@ draft = false
 tags = ["homepage", "manut.dev"]
 +++
 
-## The Inequity of Money
+![money](/00001_inequity_of_money_perspective.jpeg)
 
 Many people aspire to live in America due to its high income potential. Have you ever heard that a day's earnings at McDonald's in America can be 4-5 times higher than in other countries? Why is there such a disparity? Why are the earnings so high? Why has the dollar been the global currency since World War II? What was the global currency before the dollar? What happened in 1933?
 
