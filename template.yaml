@@ -3,6 +3,15 @@ Transform: AWS::Serverless-2016-10-31
 Description: Sam template for manut.dev
 
 Resources:
+  WebsiteOriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub "${AWS::StackName}-origin-access-control"
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
   WebsiteCloudFrontDistribution:
     Type: AWS::CloudFront::Distribution
     Properties:
@@ -18,6 +27,7 @@ Resources:
         Origins:
           - DomainName: !GetAtt StaticWebsiteBucket.RegionalDomainName
             Id: !Sub "${AWS::StackName}-S3-manut-origin"
+            OriginAccessControlId: !Ref WebsiteOriginAccessControl
             S3OriginConfig: {}
         DefaultRootObject: index.html
         DefaultCacheBehavior:
@@ -46,25 +56,29 @@ Resources:
     Properties:
       BucketName: !Sub "${AWS::StackName}-static-website-bucket"
       PublicAccessBlockConfiguration:
-        BlockPublicAcls: false
-        IgnorePublicAcls: false
-        BlockPublicPolicy: false
-        RestrictPublicBuckets: false
+        BlockPublicAcls: true
+        IgnorePublicAcls: true
+        BlockPublicPolicy: true
+        RestrictPublicBuckets: true
 
   StaticWebsiteBucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
       Bucket: !Ref StaticWebsiteBucket
       PolicyDocument:
-        Id: PublicSubfolderPolicy
+        Id: PolicyForCloudFrontPrivateContent
         Version: "2012-10-17"
         Statement:
-          - Sid: PublicReadForSubfolder
+          - Sid: AllowCloudFrontServicePrincipal
             Effect: "Allow"
-            Principal: "*"
+            Principal:
+              Service: cloudfront.amazonaws.com
             Action: "s3:GetObject"
             Resource:
               - !Sub "arn:aws:s3:::${AWS::StackName}-static-website-bucket/*"
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${WebsiteCloudFrontDistribution}"
 
 Outputs:
   WebsiteCloudFrontDistribution:
