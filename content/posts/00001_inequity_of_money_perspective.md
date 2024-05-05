@@ -1,8 +1,8 @@
 +++
-title = 'The Inequity of Money by Manut'
+title = 'The Inequity of Money Perspective'
 date = 2024-05-05T20:55:19+07:00
 draft = false
-tags = ["homepage", "manut.dev"]
+tags = ["politics"]
 +++
 
 ![money](/00001_inequity_of_money_perspective.jpeg)
@@ -16,4 +16,4 @@ These actions have led to a very low value of the Japanese yen. Why don't invest
 These are many questions that I, Manut, don't know the answer to. I continue to ponder and question things I don't understand. Is the world really fair when it comes to money these days?
 
 Note: this article is from my perspective and may not be accurate. I am not a financial expert, but I am a curious person who likes to ask questions. I hope you enjoy reading this article. 
-Note: it's translated by LLM
+Note: it's translated from thai to english by LLM
