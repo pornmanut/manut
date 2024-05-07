@@ -1,0 +1,8 @@
+baseURL: "https://manut.dev"
+languageCode: "en-us"
+title: "manut.dev"
+theme: ["paperMod"]
+uglyURLs: true
+enableRobotsTXT: true
+minify:
+  disableJSON: true

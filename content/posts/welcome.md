@@ -1,9 +1,16 @@
-+++
-title = 'Welcome to manut.dev!'
-date = 2024-01-14T07:07:07+01:00
-draft = false
-description = "Welcome to the official blog of manut.dev. Stay tuned for updates and exciting content!"
-+++
+---
+title: 'Welcome to manut.dev!'
+date: 2024-05-04T20:55:19+07:00
+description: "Welcome to the official blog of manut.dev. Stay tuned for updates and exciting content!"
+tags: ["personal"]
+author: ["Vanilas"]
+ShowReadingTime: true
+ShowBreadCrumbs: true
+ShowPostNavLinks: true
+draft: false
+---
+
+
 
 ## Introduction
 

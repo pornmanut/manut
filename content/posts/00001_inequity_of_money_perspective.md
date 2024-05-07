@@ -1,9 +1,14 @@
-+++
-title = 'The Inequity of Money Perspective'
-date = 2024-05-05T20:55:19+07:00
-draft = false
-tags = ["politics"]
-+++
+---
+title: 'The Inequity of Money Perspective'
+date: 2024-05-05T20:55:19+07:00
+description: "A perspective on the inequity of money and its global implications."
+tags: ["politics"]
+author: ["Vanilas"]
+ShowReadingTime: true
+ShowBreadCrumbs: true
+ShowPostNavLinks: true
+draft: false
+---
 
 ![money](/00001_inequity_of_money_perspective.jpeg)
 

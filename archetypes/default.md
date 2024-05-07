@@ -1,6 +1,11 @@
-+++
-title = '{{ replace .File.ContentBaseName "-" " " | title }}'
-date = {{ .Date }}
-draft = true
-tags = ["homepage", "manut.dev"]
-+++
+---
+title: '{{ replace .File.ContentBaseName "-" " " | title }}'
+description: ""
+date: {{ .Date }}
+tags: ["politics"]
+author: ["Vanilas"]
+ShowReadingTime: true
+ShowBreadCrumbs: true
+ShowPostNavLinks: true
+draft: true
+---
