@@ -1,13 +1,13 @@
 ---
 title: 'The Inequity of Money Perspective'
-date: 2024-05-05T20:55:19+07:00
+date: "2024-05-05"
 description: "A perspective on the inequity of money and its global implications."
-tags: ["politics"]
-author: ["Vanilas"]
-ShowReadingTime: true
-ShowBreadCrumbs: true
-ShowPostNavLinks: true
+author: ["Vanilas","GitHub Copilot"]
+tags: ["Politics", "Money","Personal"]
 draft: false
+cover:
+  image: images/00002_apple_money.jpg
+  caption: "Image created by AI through stable diffusion"
 ---
 
 ![money](/00001_inequity_of_money_perspective.jpeg)
