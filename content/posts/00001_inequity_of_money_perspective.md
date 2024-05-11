@@ -10,8 +10,6 @@ cover:
   caption: "Image created by AI through stable diffusion"
 ---
 
-![money](/00001_inequity_of_money_perspective.jpeg)
-
 Many people aspire to live in America due to its high income potential. Have you ever heard that a day's earnings at McDonald's in America can be 4-5 times higher than in other countries? Why is there such a disparity? Why are the earnings so high? Why has the dollar been the global currency since World War II? What was the global currency before the dollar? What happened in 1933?
 
 The role of the dollar in trade is significant, but where does the dollar actually originate? Why doesn't it equate to gold? Did Nixon's policies have any impact on this? What happened in 2024? The interest on the dollar is very high, and everyone wants to deposit in dollars. But why does Japan have negative interest rates? Does Japan have authority to control their currency?
