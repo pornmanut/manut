@@ -12,6 +12,20 @@ Resources:
         SigningBehavior: always
         SigningProtocol: sigv4
 
+  ResponseHeadersPolicy:
+    Type: AWS::CloudFront::ResponseHeadersPolicy
+    Properties:
+      ResponseHeadersPolicyConfig:
+        Name: ResponseHeadersPolicy
+        CustomHeadersConfig:
+          Items:
+            - Header: "Cross-Origin-Opener-Policy"
+              Value: "same-origin"
+              Override: true
+            - Header: "Cross-Origin-Embedder-Policy"
+              Value: "require-corp"
+              Override: true
+
   WebsiteCloudFrontDistribution:
     Type: AWS::CloudFront::Distribution
     Properties:
@@ -45,6 +59,7 @@ Resources:
           MaxTTL: 3600
           DefaultTTL: 3600
           MinTTL: 0
+          ResponseHeadersPolicyId: !Ref ResponseHeadersPolicy
         PriceClass: PriceClass_100
         CustomErrorResponses:
           - ErrorCode: 404
