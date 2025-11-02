@@ -3,15 +3,6 @@ Transform: AWS::Serverless-2016-10-31
 Description: Sam template for manut.dev
 
 Resources:
-  WebsiteOriginAccessControl:
-    Type: AWS::CloudFront::OriginAccessControl
-    Properties:
-      OriginAccessControlConfig:
-        Name: !Sub "${AWS::StackName}-origin-access-control"
-        OriginAccessControlOriginType: s3
-        SigningBehavior: always
-        SigningProtocol: sigv4
-
   ResponseHeadersPolicy:
     Type: AWS::CloudFront::ResponseHeadersPolicy
     Properties:
@@ -39,10 +30,12 @@ Resources:
           SslSupportMethod: sni-only
           MinimumProtocolVersion: TLSv1.2_2021
         Origins:
-          - DomainName: !GetAtt StaticWebsiteBucket.RegionalDomainName
+          - DomainName: !GetAtt StaticWebsiteBucket.WebsiteURL
             Id: !Sub "${AWS::StackName}-S3-manut-origin"
-            OriginAccessControlId: !Ref WebsiteOriginAccessControl
-            S3OriginConfig: {}
+            CustomOriginConfig:
+              HTTPPort: 80
+              HTTPSPort: 443
+              OriginProtocolPolicy: https-only
         DefaultRootObject: index.html
         DefaultCacheBehavior:
           Compress: true
@@ -70,6 +63,9 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Sub "${AWS::StackName}-static-website-bucket"
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: 404.html
       PublicAccessBlockConfiguration:
         BlockPublicAcls: true
         IgnorePublicAcls: true
@@ -81,19 +77,14 @@ Resources:
     Properties:
       Bucket: !Ref StaticWebsiteBucket
       PolicyDocument:
-        Id: PolicyForCloudFrontPrivateContent
+        Id: PublicReadGetObject
         Version: "2012-10-17"
         Statement:
-          - Sid: AllowCloudFrontServicePrincipal
+          - Sid: PublicReadGetObject
             Effect: "Allow"
-            Principal:
-              Service: cloudfront.amazonaws.com
+            Principal: "*"
             Action: "s3:GetObject"
-            Resource:
-              - !Sub "arn:aws:s3:::${AWS::StackName}-static-website-bucket/*"
-            Condition:
-              StringEquals:
-                AWS:SourceArn: !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${WebsiteCloudFrontDistribution}"
+            Resource: !Sub "arn:aws:s3:::${AWS::StackName}-static-website-bucket/*"
 
 Outputs:
   WebsiteCloudFrontDistribution:

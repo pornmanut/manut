@@ -35,8 +35,14 @@ const { currentPath = '/' } = Astro.props;
 <style>
 	.site-header {
 		border-bottom: 1px solid var(--border-color);
-		padding: 20px 0;
+		padding: 24px 0;
 		margin-bottom: 40px;
+		background-color: var(--background-color);
+		backdrop-filter: blur(10px);
+		position: sticky;
+		top: 0;
+		z-index: 100;
+		box-shadow: var(--shadow-sm);
 	}
 
 	.header-content {
@@ -51,6 +57,25 @@ const { currentPath = '/' } = Astro.props;
 		font-weight: 700;
 		color: var(--primary-color);
 		text-decoration: none;
+		letter-spacing: -0.025em;
+		transition: color var(--transition-fast);
+		position: relative;
+	}
+
+	.site-title a::after {
+		content: '';
+		position: absolute;
+		bottom: -4px;
+		left: 0;
+		width: 0;
+		height: 2px;
+		background-color: var(--accent-color);
+		transition: width var(--transition-normal);
+	}
+
+	.site-title a:hover::after,
+	.site-title a.active::after {
+		width: 100%;
 	}
 
 	.site-title a:hover,
@@ -61,7 +86,7 @@ const { currentPath = '/' } = Astro.props;
 	.main-nav ul {
 		display: flex;
 		list-style: none;
-		gap: 24px;
+		gap: 32px;
 	}
 
 	.main-nav a {
@@ -69,7 +94,25 @@ const { currentPath = '/' } = Astro.props;
 		font-weight: 500;
 		color: var(--secondary-color);
 		text-decoration: none;
-		transition: color 0.2s ease;
+		transition: color var(--transition-fast);
+		position: relative;
+		padding: 4px 0;
+	}
+
+	.main-nav a::before {
+		content: '';
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		width: 0;
+		height: 2px;
+		background-color: var(--accent-color);
+		transition: width var(--transition-normal);
+	}
+
+	.main-nav a:hover::before,
+	.main-nav a.active::before {
+		width: 100%;
 	}
 
 	.main-nav a:hover,
@@ -80,7 +123,15 @@ const { currentPath = '/' } = Astro.props;
 	@media (max-width: 768px) {
 		.header-content {
 			flex-direction: column;
-			gap: 16px;
+			gap: 20px;
+		}
+		
+		.site-header {
+			padding: 20px 0;
+		}
+		
+		.main-nav ul {
+			gap: 24px;
 		}
 	}
 </style>

@@ -23,14 +23,36 @@ const { title, description, image } = Astro.props;
 		<link href="https://fonts.googleapis.com/css2?family=Charter:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 		<style>
 			:root {
-				--primary-color: #1A1A1A;
-				--secondary-color: #757575;
-				--accent-color: #0066CC;
-				--background-color: #FFFFFF;
-				--card-background: #FAFAFA;
-				--border-color: #E1E1E1;
+				/* Improved color palette with better contrast and modern feel */
+				--primary-color: #1a1a1a;
+				--secondary-color: #6b7280;
+				--accent-color: #3b82f6;
+				--accent-hover: #2563eb;
+				--background-color: #ffffff;
+				--card-background: #f9fafb;
+				--card-hover: #f3f4f6;
+				--border-color: #e5e7eb;
+				--border-hover: #d1d5db;
+				--subtle-text: #9ca3af;
+				--code-bg: #f1f5f9;
+				--code-border: #e2e8f0;
+				--quote-text: #6b7280;
+				--quote-border: #d1d5db;
+				
+				/* Typography */
 				--font-body: 'Charter', Georgia, serif;
 				--font-ui: 'Inter', system-ui, sans-serif;
+				
+				/* Shadows */
+				--shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+				--shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+				--shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+				--shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+				
+				/* Transitions */
+				--transition-fast: 150ms ease;
+				--transition-normal: 250ms ease;
+				--transition-slow: 350ms ease;
 			}
 
 			* {
@@ -45,12 +67,15 @@ const { title, description, image } = Astro.props;
 				line-height: 1.58;
 				color: var(--primary-color);
 				background-color: var(--background-color);
+				scroll-behavior: smooth;
 			}
 
 			body {
 				max-width: 100%;
 				margin: 0 auto;
 				padding: 0;
+				-webkit-font-smoothing: antialiased;
+				-moz-osx-font-smoothing: grayscale;
 			}
 
 			.container {
@@ -86,6 +111,8 @@ const { title, description, image } = Astro.props;
 				font-weight: 700;
 				line-height: 1.2;
 				margin-bottom: 16px;
+				color: var(--primary-color);
+				letter-spacing: -0.025em;
 			}
 
 			h1 {
@@ -103,15 +130,18 @@ const { title, description, image } = Astro.props;
 
 			p {
 				margin-bottom: 16px;
+				color: var(--primary-color);
 			}
 
 			a {
 				color: var(--accent-color);
 				text-decoration: none;
-				transition: text-decoration 0.2s ease;
+				transition: color var(--transition-fast);
+				font-weight: 500;
 			}
 
 			a:hover {
+				color: var(--accent-hover);
 				text-decoration: underline;
 			}
 
@@ -119,35 +149,66 @@ const { title, description, image } = Astro.props;
 				max-width: 100%;
 				height: auto;
 				border-radius: 8px;
+				box-shadow: var(--shadow-md);
 			}
 
 			blockquote {
-				border-left: 4px solid var(--border-color);
+				border-left: 4px solid var(--quote-border);
 				padding-left: 20px;
 				margin: 24px 0;
 				font-style: italic;
-				color: var(--secondary-color);
+				color: var(--quote-text);
+				background-color: var(--card-background);
+				padding: 16px 20px;
+				border-radius: 0 8px 8px 0;
 			}
 
 			code {
 				font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-				background-color: #f4f4f4;
-				padding: 2px 4px;
+				background-color: var(--code-bg);
+				padding: 2px 6px;
 				border-radius: 4px;
 				font-size: 0.9em;
+				border: 1px solid var(--code-border);
+				color: var(--primary-color);
 			}
 
 			pre {
-				background-color: #f4f4f4;
-				padding: 16px;
+				background-color: var(--code-bg);
+				padding: 20px;
 				border-radius: 8px;
 				overflow-x: auto;
 				margin: 24px 0;
+				border: 1px solid var(--code-border);
+				box-shadow: var(--shadow-sm);
 			}
 
 			pre code {
 				background-color: transparent;
 				padding: 0;
+				border: none;
+			}
+
+			/* Improved focus styles for accessibility */
+			:focus-visible {
+				outline: 2px solid var(--accent-color);
+				outline-offset: 2px;
+			}
+
+			/* Smooth scrolling for anchor links */
+			html {
+				scroll-behavior: smooth;
+			}
+
+			/* Better selection colors */
+			::selection {
+				background-color: var(--accent-color);
+				color: white;
+			}
+
+			::-moz-selection {
+				background-color: var(--accent-color);
+				color: white;
 			}
 		</style>
 	</head>
