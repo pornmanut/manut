@@ -37,11 +37,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build Astro site
+      - name: Build
         run: npm run build
 
-      - name: Deploy to S3
-        run: aws s3 sync ./dist/ ${{ vars.S3_BUCKET_URL }} --delete
-
-      - name: Invalidate CloudFront cache
-        run: aws cloudfront create-invalidation --distribution-id ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }} --paths "/*"
+      - name: Copy to S3
+        run: aws s3 cp dist ${{ vars.S3_BUCKET_URL }} --recursive
