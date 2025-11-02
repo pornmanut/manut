@@ -1,0 +1,94 @@
+---
+import { getCollection } from 'astro:content';
+
+const allPosts = await getCollection('blog');
+const allTags = [...new Set(allPosts.flatMap(post => post.data.tags))].sort();
+
+export interface Props {
+	currentTag?: string;
+}
+
+const { currentTag } = Astro.props;
+---
+
+<div class="tag-filter">
+	<h3>Filter by Tags</h3>
+	<ul class="tag-list">
+		<li>
+			<a href="/" class={!currentTag ? 'active' : ''}>
+				All Posts
+			</a>
+		</li>
+		{allTags.map((tag) => (
+			<li>
+				<a 
+					href={`/blog/tag/${tag}`} 
+					class={currentTag === tag ? 'active' : ''}
+				>
+					{tag}
+				</a>
+			</li>
+		))}
+	</ul>
+</div>
+
+<style>
+	.tag-filter {
+		background-color: var(--card-background);
+		border-radius: 8px;
+		padding: 20px;
+		position: sticky;
+		top: 20px;
+	}
+
+	.tag-filter h3 {
+		font-family: var(--font-ui);
+		font-size: 1.2rem;
+		margin-bottom: 16px;
+		color: var(--primary-color);
+	}
+
+	.tag-list {
+		list-style: none;
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+
+	.tag-list a {
+		display: block;
+		padding: 8px 12px;
+		border-radius: 6px;
+		font-family: var(--font-ui);
+		font-size: 0.9rem;
+		color: var(--secondary-color);
+		text-decoration: none;
+		transition: background-color 0.2s ease, color 0.2s ease;
+	}
+
+	.tag-list a:hover {
+		background-color: var(--border-color);
+		color: var(--primary-color);
+	}
+
+	.tag-list a.active {
+		background-color: var(--accent-color);
+		color: white;
+	}
+
+	@media (max-width: 1023px) {
+		.tag-filter {
+			position: static;
+			margin-bottom: 24px;
+		}
+		
+		.tag-list {
+			flex-direction: row;
+			flex-wrap: wrap;
+		}
+		
+		.tag-list a {
+			padding: 6px 12px;
+		}
+	}
+</style>
