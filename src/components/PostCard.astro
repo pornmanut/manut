@@ -14,7 +14,7 @@ const { title, description, pubDate, heroImage, tags } = post.data;
 	<a href={`/blog/${post.id}/`} class="post-link">
 		{heroImage && (
 			<div class="post-image">
-				<img src={heroImage.url} alt={heroImage.alt} loading="lazy" />
+				<img src={heroImage} alt={title} loading="lazy" />
 			</div>
 		)}
 		<div class="post-content">
