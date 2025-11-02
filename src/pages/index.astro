@@ -1,0 +1,89 @@
+---
+import BlogLayout from '../layouts/BlogLayout.astro';
+import { getCollection } from 'astro:content';
+import PostCard from '../components/PostCard.astro';
+import TagFilter from '../components/TagFilter.astro';
+import Header from '../components/Header.astro';
+
+// Get all blog posts, excluding drafts
+const allPosts = await getCollection('blog', ({ data }) => {
+	return data.draft !== true;
+});
+
+// Sort posts by publication date (newest first)
+const sortedPosts = allPosts.sort(
+	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+// Separate featured posts
+const featuredPosts = sortedPosts.filter(post => post.data.featured);
+const regularPosts = sortedPosts.filter(post => !post.data.featured);
+---
+
+<BlogLayout title="My Blog - Personal Thoughts & Stories">
+	<Header currentPath="/" />
+	
+	<div class="content-wrapper">
+		<main class="main-content">
+			{featuredPosts.length > 0 && (
+				<section class="featured-posts">
+					<h2>Featured Posts</h2>
+					<div class="posts-grid">
+						{featuredPosts.map((post) => (
+							<PostCard post={post} />
+						))}
+					</div>
+				</section>
+			)}
+			
+			<section class="recent-posts">
+				<h2>Recent Posts</h2>
+				{regularPosts.length > 0 ? (
+					<div class="posts-grid">
+						{regularPosts.map((post) => (
+							<PostCard post={post} />
+						))}
+					</div>
+				) : (
+					<p>No posts yet. Check back soon!</p>
+				)}
+			</section>
+		</main>
+		
+		<aside class="sidebar">
+			<TagFilter />
+		</aside>
+	</div>
+	
+	<style>
+		.featured-posts {
+			margin-bottom: 48px;
+		}
+		
+		.featured-posts h2,
+		.recent-posts h2 {
+			font-family: var(--font-ui);
+			font-size: 1.8rem;
+			margin-bottom: 24px;
+			color: var(--primary-color);
+		}
+		
+		.posts-grid {
+			display: grid;
+			gap: 32px;
+			grid-template-columns: 1fr;
+		}
+		
+		@media (min-width: 768px) {
+			.posts-grid {
+				grid-template-columns: repeat(2, 1fr);
+			}
+		}
+		
+		@media (min-width: 1024px) {
+			.posts-grid {
+				grid-template-columns: 1fr;
+			}
+		}
+	</style>
+</BlogLayout>

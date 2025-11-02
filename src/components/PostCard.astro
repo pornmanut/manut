@@ -1,0 +1,125 @@
+---
+import type { CollectionEntry } from 'astro:content';
+
+export interface Props {
+	post: CollectionEntry<'blog'>;
+	showExcerpt?: boolean;
+}
+
+const { post, showExcerpt = true } = Astro.props;
+const { title, description, pubDate, heroImage, tags } = post.data;
+---
+
+<article class="post-card">
+	<a href={`/blog/${post.id}/`} class="post-link">
+		{heroImage && (
+			<div class="post-image">
+				<img src={heroImage} alt={title} loading="lazy" />
+			</div>
+		)}
+		<div class="post-content">
+			<h2 class="post-title">{title}</h2>
+			{showExcerpt && description && (
+				<p class="post-excerpt">{description}</p>
+			)}
+			<div class="post-meta">
+				<time datetime={pubDate.toISOString()}>
+					{pubDate.toLocaleDateString('en-US', { 
+						year: 'numeric', 
+						month: 'long', 
+						day: 'numeric' 
+					})}
+				</time>
+			</div>
+			{tags.length > 0 && (
+				<div class="post-tags">
+					{tags.map((tag) => (
+						<span class="tag">{tag}</span>
+					))}
+				</div>
+			)}
+		</div>
+	</a>
+</article>
+
+<style>
+	.post-card {
+		background-color: var(--background-color);
+		border-radius: 8px;
+		overflow: hidden;
+		transition: transform 0.2s ease, box-shadow 0.2s ease;
+		border: 1px solid var(--border-color);
+	}
+
+	.post-card:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+	}
+
+	.post-link {
+		display: block;
+		text-decoration: none;
+		color: inherit;
+	}
+
+	.post-image {
+		width: 100%;
+		height: 200px;
+		overflow: hidden;
+	}
+
+	.post-image img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+		transition: transform 0.3s ease;
+	}
+
+	.post-card:hover .post-image img {
+		transform: scale(1.05);
+	}
+
+	.post-content {
+		padding: 24px;
+	}
+
+	.post-title {
+		font-family: var(--font-ui);
+		font-size: 1.5rem;
+		font-weight: 700;
+		line-height: 1.2;
+		margin-bottom: 12px;
+		color: var(--primary-color);
+	}
+
+	.post-excerpt {
+		color: var(--secondary-color);
+		margin-bottom: 16px;
+		display: -webkit-box;
+		-webkit-line-clamp: 3;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+
+	.post-meta {
+		font-family: var(--font-ui);
+		font-size: 0.9rem;
+		color: var(--secondary-color);
+		margin-bottom: 16px;
+	}
+
+	.post-tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+	}
+
+	.tag {
+		background-color: var(--card-background);
+		color: var(--secondary-color);
+		padding: 4px 8px;
+		border-radius: 12px;
+		font-size: 0.8rem;
+		font-family: var(--font-ui);
+	}
+</style>

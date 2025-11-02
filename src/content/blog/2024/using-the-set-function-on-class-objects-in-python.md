@@ -1,14 +1,13 @@
 ---
 title: "Using the set() Function on Class Objects in Python"
-date: "2024-05-09"
 description: "Learn how to use the set() function to compare class objects in Python."
-author: ["Vanilas", "GitHub Copilot"]
+pubDate: 2024-05-09
 tags: ["Python", "Programming", "Work"]
-draft: false
-cover:
-  image: images/00001_set_abstract.jpg
-  caption: "Image created by AI through stable diffusion"
+heroImage: "/images/00002_set_abstract.jpg"
+featured: false
 ---
+
+Image created by AI through stable diffusion
 
 Our team needs to design an application that retrieves data from a database using an ID provided in a request. The goal is to compare the data from the request with the results from the database, and identify any data that is not found in the database. This missing data should then be sent back in response to the request.
 
@@ -18,13 +17,10 @@ In our discussions about potential solutions, we determined that we could use th
 
 Python's set data type provides a variety of operations that you can perform. These operations are similar to the ones you would perform with mathematical sets. They include:
 
-- **Union**: The union of two sets is a set of all elements from both sets. In Python, you can use the `union()` method or the `|` operator.
-
-- **Intersection**: The intersection of two sets is a set of all elements that are common to both sets. You can use the `intersection()` method or the `&` operator.
-
-- **Difference**: The difference of the set `A` from the set `B` (`A - B`) is a set of elements that are only in `A` but not in `B`. Similarly, `B - A` is a set of elements in `B` but not in `A`. You can use the `difference()` method or the `-` operator.
-
-- **Symmetric Difference**: The symmetric difference of two sets is a set of elements that are in either of the sets but not in their intersection. You can use the `symmetric_difference()` method or the `^` operator.
+* **Union**: The union of two sets is a set of all elements from both sets. In Python, you can use the `union()` method or the `|` operator.
+* **Intersection**: The intersection of two sets is a set of all elements that are common to both sets. You can use the `intersection()` method or the `&` operator.
+* **Difference**: The difference of the set `A` from the set `B` (`A - B`) is a set of elements that are only in `A` but not in `B`. Similarly, `B - A` is a set of elements in `B` but not in `A`. You can use the `difference()` method or the `-` operator.
+* **Symmetric Difference**: The symmetric difference of two sets is a set of elements that are in either of the sets but not in their intersection. You can use the `symmetric_difference()` method or the `^` operator.
 
 Here are these operations in action:
 
@@ -51,7 +47,7 @@ print(set1 ^ set2)  # {1, 2, 3, 6, 7, 8}
 
 ## Converting a List to a Set in Python
 
-In Python, if you have a list of data and you want to convert it to a set, you can use the `set()` function. The `set()` function ensures that there are no duplicate data in the set. 
+In Python, if you have a list of data and you want to convert it to a set, you can use the `set()` function. The `set()` function ensures that there are no duplicate data in the set.
 
 ```python
 data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
@@ -63,7 +59,7 @@ The result will be `{1, 2, 3, 4, 5, 6, 7, 8, 9, 10}`.
 
 ## Converting a Class Object to a Set
 
-If you want to convert a class object to a set, you can also use the `set()` function. However, you must ensure that you have implemented the `__hash__` and `__eq__` methods in your class. 
+If you want to convert a class object to a set, you can also use the `set()` function. However, you must ensure that you have implemented the `__hash__` and `__eq__` methods in your class.
 
 ```python
 class Person:
@@ -149,4 +145,3 @@ print(person_set)
 ```
 
 The result will be `{Person(name=John, age=25)}`.
-

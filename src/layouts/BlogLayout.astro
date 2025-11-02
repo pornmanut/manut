@@ -1,0 +1,159 @@
+---
+export interface Props {
+	title: string;
+	description?: string;
+	image?: string;
+}
+
+const { title, description, image } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="viewport" content="width=device-width" />
+		<meta name="generator" content={Astro.generator} />
+		<title>{title}</title>
+		{description && <meta name="description" content={description} />}
+		{image && <meta property="og:image" content={image} />}
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Charter:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+		<style>
+			:root {
+				--primary-color: #1A1A1A;
+				--secondary-color: #757575;
+				--accent-color: #0066CC;
+				--background-color: #FFFFFF;
+				--card-background: #FAFAFA;
+				--border-color: #E1E1E1;
+				--font-body: 'Charter', Georgia, serif;
+				--font-ui: 'Inter', system-ui, sans-serif;
+			}
+
+			* {
+				box-sizing: border-box;
+				margin: 0;
+				padding: 0;
+			}
+
+			html {
+				font-family: var(--font-body);
+				font-size: 21px;
+				line-height: 1.58;
+				color: var(--primary-color);
+				background-color: var(--background-color);
+			}
+
+			body {
+				max-width: 100%;
+				margin: 0 auto;
+				padding: 0;
+			}
+
+			.container {
+				max-width: 1200px;
+				margin: 0 auto;
+				padding: 0 20px;
+			}
+
+			.content-wrapper {
+				display: flex;
+				flex-direction: column;
+				gap: 40px;
+			}
+
+			@media (min-width: 1024px) {
+				.content-wrapper {
+					flex-direction: row;
+					gap: 60px;
+				}
+				
+				.main-content {
+					flex: 1;
+					max-width: 680px;
+				}
+				
+				.sidebar {
+					width: 300px;
+				}
+			}
+
+			h1, h2, h3, h4, h5, h6 {
+				font-family: var(--font-ui);
+				font-weight: 700;
+				line-height: 1.2;
+				margin-bottom: 16px;
+			}
+
+			h1 {
+				font-size: 2.5rem;
+				margin-bottom: 24px;
+			}
+
+			h2 {
+				font-size: 2rem;
+			}
+
+			h3 {
+				font-size: 1.5rem;
+			}
+
+			p {
+				margin-bottom: 16px;
+			}
+
+			a {
+				color: var(--accent-color);
+				text-decoration: none;
+				transition: text-decoration 0.2s ease;
+			}
+
+			a:hover {
+				text-decoration: underline;
+			}
+
+			img {
+				max-width: 100%;
+				height: auto;
+				border-radius: 8px;
+			}
+
+			blockquote {
+				border-left: 4px solid var(--border-color);
+				padding-left: 20px;
+				margin: 24px 0;
+				font-style: italic;
+				color: var(--secondary-color);
+			}
+
+			code {
+				font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+				background-color: #f4f4f4;
+				padding: 2px 4px;
+				border-radius: 4px;
+				font-size: 0.9em;
+			}
+
+			pre {
+				background-color: #f4f4f4;
+				padding: 16px;
+				border-radius: 8px;
+				overflow-x: auto;
+				margin: 24px 0;
+			}
+
+			pre code {
+				background-color: transparent;
+				padding: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<slot />
+		</div>
+	</body>
+</html>

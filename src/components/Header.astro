@@ -1,0 +1,86 @@
+---
+export interface Props {
+	currentPath?: string;
+}
+
+const { currentPath = '/' } = Astro.props;
+---
+
+<header class="site-header">
+	<div class="container">
+		<div class="header-content">
+			<div class="site-title">
+				<a href="/" class={currentPath === '/' ? 'active' : ''}>
+					My Blog
+				</a>
+			</div>
+			<nav class="main-nav">
+				<ul>
+					<li>
+						<a href="/" class={currentPath === '/' ? 'active' : ''}>
+							Home
+						</a>
+					</li>
+					<li>
+						<a href="/about" class={currentPath === '/about' ? 'active' : ''}>
+							About
+						</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+</header>
+
+<style>
+	.site-header {
+		border-bottom: 1px solid var(--border-color);
+		padding: 20px 0;
+		margin-bottom: 40px;
+	}
+
+	.header-content {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.site-title a {
+		font-family: var(--font-ui);
+		font-size: 1.5rem;
+		font-weight: 700;
+		color: var(--primary-color);
+		text-decoration: none;
+	}
+
+	.site-title a:hover,
+	.site-title a.active {
+		color: var(--accent-color);
+	}
+
+	.main-nav ul {
+		display: flex;
+		list-style: none;
+		gap: 24px;
+	}
+
+	.main-nav a {
+		font-family: var(--font-ui);
+		font-weight: 500;
+		color: var(--secondary-color);
+		text-decoration: none;
+		transition: color 0.2s ease;
+	}
+
+	.main-nav a:hover,
+	.main-nav a.active {
+		color: var(--accent-color);
+	}
+
+	@media (max-width: 768px) {
+		.header-content {
+			flex-direction: column;
+			gap: 16px;
+		}
+	}
+</style>
