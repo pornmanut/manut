@@ -1,0 +1,115 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Sam template for manut.dev
+Resources:
+  WebsiteOriginAccessControl:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name:
+          Fn::Sub: ${AWS::StackName}-origin-access-control
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+  ResponseHeadersPolicy:
+    Type: AWS::CloudFront::ResponseHeadersPolicy
+    Properties:
+      ResponseHeadersPolicyConfig:
+        Name: ResponseHeadersPolicy
+        CustomHeadersConfig:
+          Items:
+          - Header: Cross-Origin-Opener-Policy
+            Value: same-origin
+            Override: true
+          - Header: Cross-Origin-Embedder-Policy
+            Value: require-corp
+            Override: true
+  WebsiteCloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        Aliases:
+        - manut.dev
+        - '*.manut.dev'
+        ViewerCertificate:
+          AcmCertificateArn: arn:aws:acm:us-east-1:668933070809:certificate/4992578c-fa73-47cf-8424-3bf7481517d6
+          SslSupportMethod: sni-only
+          MinimumProtocolVersion: TLSv1.2_2021
+        Origins:
+        - DomainName:
+            Fn::GetAtt:
+            - StaticWebsiteBucket
+            - RegionalDomainName
+          Id:
+            Fn::Sub: ${AWS::StackName}-S3-manut-origin
+          OriginAccessControlId:
+            Ref: WebsiteOriginAccessControl
+          S3OriginConfig: {}
+        DefaultRootObject: index.html
+        DefaultCacheBehavior:
+          Compress: true
+          TargetOriginId:
+            Fn::Sub: ${AWS::StackName}-S3-manut-origin
+          AllowedMethods:
+          - GET
+          - HEAD
+          - OPTIONS
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: none
+          ViewerProtocolPolicy: redirect-to-https
+          MaxTTL: 3600
+          DefaultTTL: 3600
+          MinTTL: 0
+          ResponseHeadersPolicyId:
+            Ref: ResponseHeadersPolicy
+        PriceClass: PriceClass_100
+        CustomErrorResponses:
+        - ErrorCode: 404
+          ResponseCode: 404
+          ResponsePagePath: /404.html
+  StaticWebsiteBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        Fn::Sub: ${AWS::StackName}-static-website-bucket
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        IgnorePublicAcls: true
+        BlockPublicPolicy: true
+        RestrictPublicBuckets: true
+  StaticWebsiteBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket:
+        Ref: StaticWebsiteBucket
+      PolicyDocument:
+        Id: PolicyForCloudFrontPrivateContent
+        Version: '2012-10-17'
+        Statement:
+        - Sid: AllowCloudFrontServicePrincipal
+          Effect: Allow
+          Principal:
+            Service: cloudfront.amazonaws.com
+          Action: s3:GetObject
+          Resource:
+          - Fn::Sub: arn:aws:s3:::${AWS::StackName}-static-website-bucket/*
+          Condition:
+            StringEquals:
+              AWS:SourceArn:
+                Fn::Sub: arn:aws:cloudfront::${AWS::AccountId}:distribution/${WebsiteCloudFrontDistribution}
+Outputs:
+  WebsiteCloudFrontDistribution:
+    Description: CloudFront distribution URL
+    Value:
+      Fn::GetAtt:
+      - WebsiteCloudFrontDistribution
+      - DomainName
+  S3WebsiteEndpoint:
+    Description: S3 bucket URL
+    Value:
+      Fn::GetAtt:
+      - StaticWebsiteBucket
+      - WebsiteURL
