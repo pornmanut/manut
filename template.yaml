@@ -77,6 +77,7 @@ Resources:
     Type: AWS::CloudFront::Function
     Properties:
       Name: !Sub "${AWS::StackName}-url-rewrite"
+      AutoPublish: true
       FunctionConfig:
         Comment: "Rewrite URLs to handle S3 static website routing with OAC"
         Runtime: cloudfront-js-1.0
