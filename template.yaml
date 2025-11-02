@@ -63,7 +63,7 @@ Resources:
           ResponseHeadersPolicyId: !Ref ResponseHeadersPolicy
           FunctionAssociations:
             - EventType: viewer-request
-              FunctionARN: !GetAtt UrlRewriteFunction.Name
+              FunctionARN: !GetAtt UrlRewriteFunction.FunctionMetadata.FunctionARN
         PriceClass: PriceClass_100
         CustomErrorResponses:
           - ErrorCode: 404
