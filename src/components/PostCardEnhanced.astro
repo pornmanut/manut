@@ -1,0 +1,78 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+
+export interface Props {
+	post: CollectionEntry<'blog'>;
+	showExcerpt?: boolean;
+}
+
+const { post, showExcerpt = true } = Astro.props;
+const { title, description, pubDate, heroImage, tags } = post.data;
+---
+
+<Card className="hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
+	<a href={`/blog/${post.id}/`} class="block text-decoration-none color-inherit">
+		{heroImage && (
+			<div class="overflow-hidden h-48 rounded-t-lg">
+				<img 
+					src={heroImage} 
+					alt={title} 
+					loading="lazy" 
+					class="w-full h-full object-cover transition-transform duration-500 hover:scale-110" 
+				/>
+			</div>
+		)}
+		<CardHeader className="pb-3">
+			<CardTitle className="text-xl font-bold hover:text-primary transition-colors line-clamp-2">
+				{title}
+			</CardTitle>
+			<div class="flex items-center text-sm text-muted-foreground gap-2">
+				<span>📅</span>
+				<time datetime={pubDate.toISOString()}>
+					{pubDate.toLocaleDateString('en-US', { 
+						year: 'numeric', 
+						month: 'long', 
+						day: 'numeric' 
+					})}
+				</time>
+			</div>
+		</CardHeader>
+		<CardContent className="pt-0">
+			{showExcerpt && description && (
+				<CardDescription className="line-clamp-3 mb-4">
+					{description}
+				</CardDescription>
+			)}
+			{tags.length > 0 && (
+				<div class="flex flex-wrap gap-2 mb-4">
+					{tags.map((tag) => (
+						<span class="inline-flex items-center rounded-full bg-secondary px-3 py-1 text-xs font-medium text-secondary-foreground hover:bg-accent hover:text-accent-foreground transition-colors">
+							{tag}
+						</span>
+					))}
+				</div>
+			)}
+			<Button variant="outline" size="sm" className="w-full">
+				Read More
+			</Button>
+		</CardContent>
+	</a>
+</Card>
+
+<style>
+	.line-clamp-2 {
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+	
+	.line-clamp-3 {
+		display: -webkit-box;
+		-webkit-line-clamp: 3;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+</style>

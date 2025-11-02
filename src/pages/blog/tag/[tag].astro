@@ -1,7 +1,7 @@
 ---
 import BlogLayout from '../../../layouts/BlogLayout.astro';
 import { getCollection } from 'astro:content';
-import PostCard from '../../../components/PostCard.astro';
+import PostCardEnhanced from '../../../components/PostCardEnhanced.astro';
 import Header from '../../../components/Header.astro';
 import TagFilter from '../../../components/TagFilter.astro';
 
@@ -35,82 +35,41 @@ const sortedPosts = posts.sort(
 <BlogLayout title={`Posts tagged with "${tag}"`}>
 	<Header currentPath={`/blog/tag/${tag}`} />
 	
-	<div class="content-wrapper">
-		<main class="main-content">
-			<section class="tagged-posts">
-				<h1>Posts tagged with "{tag}"</h1>
-				<p class="tag-description">
-					Found {sortedPosts.length} post{sortedPosts.length !== 1 ? 's' : ''} tagged with "{tag}"
-				</p>
-				
-				{sortedPosts.length > 0 ? (
-					<div class="posts-grid">
-						{sortedPosts.map((post) => (
-							<PostCard post={post} />
-						))}
+	<div class="container mx-auto px-4 py-8 max-w-6xl">
+		<div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+			<main class="lg:col-span-3">
+				<section>
+					<h1 class="text-3xl font-bold mb-2 text-primary font-sans">Posts tagged with "{tag}"</h1>
+					<p class="text-muted-foreground mb-8 font-sans">
+						Found {sortedPosts.length} post{sortedPosts.length !== 1 ? 's' : ''} tagged with "{tag}"
+					</p>
+					
+					{sortedPosts.length > 0 ? (
+						<div class="space-y-8">
+							{sortedPosts.map((post) => (
+								<PostCardEnhanced post={post} />
+							))}
+						</div>
+					) : (
+						<div class="text-center py-12">
+							<p class="text-muted-foreground text-lg">No posts found with this tag.</p>
+						</div>
+					)}
+					
+					<div class="mt-12 pt-8 border-t">
+						<a 
+							href="/" 
+							class="inline-flex items-center text-primary hover:underline font-medium"
+						>
+							← Back to all posts
+						</a>
 					</div>
-				) : (
-					<p>No posts found with this tag.</p>
-				)}
-				
-				<div class="back-to-all">
-					<a href="/">&larr; Back to all posts</a>
-				</div>
-			</section>
-		</main>
-		
-		<aside class="sidebar">
-			<TagFilter currentTag={tag} />
-		</aside>
+				</section>
+			</main>
+			
+			<aside class="lg:col-span-1">
+				<TagFilter currentTag={tag} />
+			</aside>
+		</div>
 	</div>
-	
-	<style>
-		.tagged-posts h1 {
-			font-family: var(--font-ui);
-			font-size: 2rem;
-			margin-bottom: 8px;
-			color: var(--primary-color);
-		}
-		
-		.tag-description {
-			color: var(--secondary-color);
-			font-family: var(--font-ui);
-			margin-bottom: 32px;
-		}
-		
-		.posts-grid {
-			display: grid;
-			gap: 32px;
-			grid-template-columns: 1fr;
-		}
-		
-		@media (min-width: 768px) {
-			.posts-grid {
-				grid-template-columns: repeat(2, 1fr);
-			}
-		}
-		
-		@media (min-width: 1024px) {
-			.posts-grid {
-				grid-template-columns: 1fr;
-			}
-		}
-		
-		.back-to-all {
-			margin-top: 48px;
-			padding-top: 24px;
-			border-top: 1px solid var(--border-color);
-		}
-		
-		.back-to-all a {
-			font-family: var(--font-ui);
-			font-weight: 500;
-			color: var(--secondary-color);
-			text-decoration: none;
-		}
-		
-		.back-to-all a:hover {
-			color: var(--accent-color);
-		}
-	</style>
 </BlogLayout>

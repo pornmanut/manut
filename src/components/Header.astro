@@ -6,132 +6,26 @@ export interface Props {
 const { currentPath = '/' } = Astro.props;
 ---
 
-<header class="site-header">
-	<div class="container">
-		<div class="header-content">
-			<div class="site-title">
-				<a href="/" class={currentPath === '/' ? 'active' : ''}>
-					My Blog
-				</a>
-			</div>
-			<nav class="main-nav">
-				<ul>
-					<li>
-						<a href="/" class={currentPath === '/' ? 'active' : ''}>
-							Home
-						</a>
-					</li>
-					<li>
-						<a href="/about" class={currentPath === '/about' ? 'active' : ''}>
-							About
-						</a>
-					</li>
-				</ul>
-			</nav>
+<header class="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+	<div class="container mx-auto px-4 h-14 flex items-center">
+		<div class="mr-4 flex">
+			<a href="/" class={`mr-6 flex items-center space-x-2 ${currentPath === '/' ? 'text-primary' : 'text-muted-foreground'} transition-colors hover:text-foreground`}>
+				<span class="font-bold">My Blog</span>
+			</a>
 		</div>
+		<nav class="flex items-center space-x-6 text-sm font-medium">
+			<a 
+				href="/" 
+				class={`transition-colors hover:text-foreground ${currentPath === '/' ? 'text-foreground' : 'text-muted-foreground'}`}
+			>
+				Home
+			</a>
+			<a 
+				href="/about" 
+				class={`transition-colors hover:text-foreground ${currentPath === '/about' ? 'text-foreground' : 'text-muted-foreground'}`}
+			>
+				About
+			</a>
+		</nav>
 	</div>
 </header>
-
-<style>
-	.site-header {
-		border-bottom: 1px solid var(--border-color);
-		padding: 24px 0;
-		margin-bottom: 40px;
-		background-color: var(--background-color);
-		backdrop-filter: blur(10px);
-		position: sticky;
-		top: 0;
-		z-index: 100;
-		box-shadow: var(--shadow-sm);
-	}
-
-	.header-content {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-	}
-
-	.site-title a {
-		font-family: var(--font-ui);
-		font-size: 1.5rem;
-		font-weight: 700;
-		color: var(--primary-color);
-		text-decoration: none;
-		letter-spacing: -0.025em;
-		transition: color var(--transition-fast);
-		position: relative;
-	}
-
-	.site-title a::after {
-		content: '';
-		position: absolute;
-		bottom: -4px;
-		left: 0;
-		width: 0;
-		height: 2px;
-		background-color: var(--accent-color);
-		transition: width var(--transition-normal);
-	}
-
-	.site-title a:hover::after,
-	.site-title a.active::after {
-		width: 100%;
-	}
-
-	.site-title a:hover,
-	.site-title a.active {
-		color: var(--accent-color);
-	}
-
-	.main-nav ul {
-		display: flex;
-		list-style: none;
-		gap: 32px;
-	}
-
-	.main-nav a {
-		font-family: var(--font-ui);
-		font-weight: 500;
-		color: var(--secondary-color);
-		text-decoration: none;
-		transition: color var(--transition-fast);
-		position: relative;
-		padding: 4px 0;
-	}
-
-	.main-nav a::before {
-		content: '';
-		position: absolute;
-		bottom: 0;
-		left: 0;
-		width: 0;
-		height: 2px;
-		background-color: var(--accent-color);
-		transition: width var(--transition-normal);
-	}
-
-	.main-nav a:hover::before,
-	.main-nav a.active::before {
-		width: 100%;
-	}
-
-	.main-nav a:hover,
-	.main-nav a.active {
-		color: var(--accent-color);
-	}
-
-	@media (max-width: 768px) {
-		.header-content {
-			flex-direction: column;
-			gap: 20px;
-		}
-		
-		.site-header {
-			padding: 20px 0;
-		}
-		
-		.main-nav ul {
-			gap: 24px;
-		}
-	}
-</style>

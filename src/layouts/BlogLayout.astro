@@ -21,199 +21,32 @@ const { title, description, image } = Astro.props;
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link href="https://fonts.googleapis.com/css2?family=Charter:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+		<style is:global>
+			@import "../styles/global.css";
+		</style>
 		<style>
-			:root {
-				/* Improved color palette with better contrast and modern feel */
-				--primary-color: #1a1a1a;
-				--secondary-color: #6b7280;
-				--accent-color: #3b82f6;
-				--accent-hover: #2563eb;
-				--background-color: #ffffff;
-				--card-background: #f9fafb;
-				--card-hover: #f3f4f6;
-				--border-color: #e5e7eb;
-				--border-hover: #d1d5db;
-				--subtle-text: #9ca3af;
-				--code-bg: #f1f5f9;
-				--code-border: #e2e8f0;
-				--quote-text: #6b7280;
-				--quote-border: #d1d5db;
-				
-				/* Typography */
-				--font-body: 'Charter', Georgia, serif;
-				--font-ui: 'Inter', system-ui, sans-serif;
-				
-				/* Shadows */
-				--shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-				--shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-				--shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-				--shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-				
-				/* Transitions */
-				--transition-fast: 150ms ease;
-				--transition-normal: 250ms ease;
-				--transition-slow: 350ms ease;
-			}
-
-			* {
-				box-sizing: border-box;
-				margin: 0;
-				padding: 0;
-			}
-
 			html {
-				font-family: var(--font-body);
-				font-size: 21px;
-				line-height: 1.58;
-				color: var(--primary-color);
-				background-color: var(--background-color);
+				font-family: 'Charter', Georgia, serif;
 				scroll-behavior: smooth;
 			}
 
 			body {
-				max-width: 100%;
-				margin: 0 auto;
-				padding: 0;
 				-webkit-font-smoothing: antialiased;
 				-moz-osx-font-smoothing: grayscale;
 			}
 
-			.container {
-				max-width: 1200px;
-				margin: 0 auto;
-				padding: 0 20px;
+			/* Custom font classes for typography */
+			.font-serif {
+				font-family: 'Charter', Georgia, serif;
 			}
 
-			.content-wrapper {
-				display: flex;
-				flex-direction: column;
-				gap: 40px;
-			}
-
-			@media (min-width: 1024px) {
-				.content-wrapper {
-					flex-direction: row;
-					gap: 60px;
-				}
-				
-				.main-content {
-					flex: 1;
-					max-width: 680px;
-				}
-				
-				.sidebar {
-					width: 300px;
-				}
-			}
-
-			h1, h2, h3, h4, h5, h6 {
-				font-family: var(--font-ui);
-				font-weight: 700;
-				line-height: 1.2;
-				margin-bottom: 16px;
-				color: var(--primary-color);
-				letter-spacing: -0.025em;
-			}
-
-			h1 {
-				font-size: 2.5rem;
-				margin-bottom: 24px;
-			}
-
-			h2 {
-				font-size: 2rem;
-			}
-
-			h3 {
-				font-size: 1.5rem;
-			}
-
-			p {
-				margin-bottom: 16px;
-				color: var(--primary-color);
-			}
-
-			a {
-				color: var(--accent-color);
-				text-decoration: none;
-				transition: color var(--transition-fast);
-				font-weight: 500;
-			}
-
-			a:hover {
-				color: var(--accent-hover);
-				text-decoration: underline;
-			}
-
-			img {
-				max-width: 100%;
-				height: auto;
-				border-radius: 8px;
-				box-shadow: var(--shadow-md);
-			}
-
-			blockquote {
-				border-left: 4px solid var(--quote-border);
-				padding-left: 20px;
-				margin: 24px 0;
-				font-style: italic;
-				color: var(--quote-text);
-				background-color: var(--card-background);
-				padding: 16px 20px;
-				border-radius: 0 8px 8px 0;
-			}
-
-			code {
-				font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-				background-color: var(--code-bg);
-				padding: 2px 6px;
-				border-radius: 4px;
-				font-size: 0.9em;
-				border: 1px solid var(--code-border);
-				color: var(--primary-color);
-			}
-
-			pre {
-				background-color: var(--code-bg);
-				padding: 20px;
-				border-radius: 8px;
-				overflow-x: auto;
-				margin: 24px 0;
-				border: 1px solid var(--code-border);
-				box-shadow: var(--shadow-sm);
-			}
-
-			pre code {
-				background-color: transparent;
-				padding: 0;
-				border: none;
-			}
-
-			/* Improved focus styles for accessibility */
-			:focus-visible {
-				outline: 2px solid var(--accent-color);
-				outline-offset: 2px;
-			}
-
-			/* Smooth scrolling for anchor links */
-			html {
-				scroll-behavior: smooth;
-			}
-
-			/* Better selection colors */
-			::selection {
-				background-color: var(--accent-color);
-				color: white;
-			}
-
-			::-moz-selection {
-				background-color: var(--accent-color);
-				color: white;
+			.font-sans {
+				font-family: 'Inter', system-ui, sans-serif;
 			}
 		</style>
 	</head>
 	<body>
-		<div class="container">
+		<div class="min-h-screen bg-background text-foreground">
 			<slot />
 		</div>
 	</body>
