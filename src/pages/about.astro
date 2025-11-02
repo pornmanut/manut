@@ -1,0 +1,71 @@
+---
+import BlogLayout from '../layouts/BlogLayout.astro';
+---
+
+<BlogLayout title="About Me">
+	<div class="about-content">
+		<h1>About Me</h1>
+		<div class="about-section">
+			<p>Welcome to my personal blog! I'm a developer passionate about technology, programming, and sharing knowledge with the community.</p>
+			<p>This blog serves as a platform for me to document my learning journey, share technical insights, and discuss topics that interest me in the world of software development and beyond.</p>
+		</div>
+		
+		<div class="about-section">
+			<h2>What I Write About</h2>
+			<ul>
+				<li>Programming tutorials and best practices</li>
+				<li>Technical solutions to common problems</li>
+				<li>Thoughts on technology trends</li>
+				<li>Personal development and career insights</li>
+			</ul>
+		</div>
+		
+		<div class="about-section">
+			<h2>Get in Touch</h2>
+			<p>If you have any questions, feedback, or just want to connect, feel free to reach out through the comments on my posts or through my social media profiles.</p>
+		</div>
+	</div>
+</BlogLayout>
+
+<style>
+	.about-content {
+		max-width: 800px;
+		margin: 0 auto;
+		padding: 0 20px;
+	}
+	
+	.about-section {
+		margin-bottom: 2rem;
+	}
+	
+	.about-section h1 {
+		font-size: 2.5rem;
+		margin-bottom: 1.5rem;
+		color: var(--primary-color);
+	}
+	
+	.about-section h2 {
+		font-size: 1.8rem;
+		margin-bottom: 1rem;
+		margin-top: 2rem;
+		color: var(--primary-color);
+	}
+	
+	.about-section p {
+		font-size: 1.1rem;
+		line-height: 1.7;
+		margin-bottom: 1rem;
+		color: var(--text-color);
+	}
+	
+	.about-section ul {
+		padding-left: 20px;
+	}
+	
+	.about-section li {
+		margin-bottom: 0.5rem;
+		font-size: 1.1rem;
+		line-height: 1.6;
+		color: var(--text-color);
+	}
+</style>
