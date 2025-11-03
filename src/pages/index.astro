@@ -1,16 +1,113 @@
 ---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
 
+// Get all blog posts and sort by publication date (newest first)
+const allPosts = await getCollection('blog', ({ data }) => {
+  // Filter out draft posts
+  return data.draft !== true;
+});
+
+const posts = allPosts
+  .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+  .slice(0, 5); // Show only the 5 most recent posts
+
+// Format date for display
+const formatDate = (date: Date) => {
+  return new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  }).format(date);
+};
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<BaseLayout title="Home - Manut.dev" description="Welcome to my personal blog">
+  <div class="space-y-8">
+    <section class="text-center py-12">
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">
+        Welcome to My Blog
+      </h1>
+      <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+        A personal blog about web development, technology, and random thoughts.
+        Built with Astro and Tailwind CSS.
+      </p>
+    </section>
+
+    <section class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-semibold text-gray-900">Recent Posts</h2>
+        <a 
+          href="/blog" 
+          class="text-blue-600 hover:text-blue-800 text-sm font-medium transition-colors"
+        >
+          View all posts →
+        </a>
+      </div>
+      
+      {posts.length > 0 ? (
+        <div class="space-y-8">
+          {posts.map((post) => (
+            <article class="border-b border-gray-200 pb-8 last:border-b-0 last:pb-0">
+              <div class="space-y-3">
+                <div class="flex items-center space-x-4 text-sm text-gray-500">
+                  <time datetime={post.data.pubDate.toISOString()}>
+                    {formatDate(post.data.pubDate)}
+                  </time>
+                  {post.data.author && (
+                    <span>•</span>
+                  )}
+                  {post.data.author && (
+                    <span>By {post.data.author}</span>
+                  )}
+                </div>
+                
+                <h3 class="text-xl font-semibold text-gray-900">
+                  <a 
+                    href={`/blog/${post.slug}/`}
+                    class="hover:text-blue-600 transition-colors"
+                  >
+                    {post.data.title}
+                  </a>
+                </h3>
+                
+                {post.data.description && (
+                  <p class="text-gray-600 leading-relaxed">
+                    {post.data.description}
+                  </p>
+                )}
+                
+                {post.data.tags && post.data.tags.length > 0 && (
+                  <div class="flex flex-wrap gap-2">
+                    {post.data.tags.map((tag) => (
+                      <span 
+                        class="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+                
+                <div class="pt-2">
+                  <a 
+                    href={`/blog/${post.slug}/`}
+                    class="text-blue-600 hover:text-blue-800 font-medium text-sm transition-colors"
+                  >
+                    Read more →
+                  </a>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <div class="text-center py-8">
+          <p class="text-gray-600">
+            No blog posts yet. Check back soon!
+          </p>
+        </div>
+      )}
+    </section>
+  </div>
+</BaseLayout>
