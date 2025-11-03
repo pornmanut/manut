@@ -1,36 +1,43 @@
-# Manut.dev - SAM Deployment
+# Astro Starter Kit: Minimal
 
-This project uses AWS SAM (Serverless Application Model) for deployment.
-
-## Deployment Files
-
-- `samconfig.toml` - SAM configuration file
-- `template.yaml` - AWS CloudFormation template defining the infrastructure
-- `.github/workflows/` - CI/CD workflows for automated deployment
-
-## Infrastructure
-
-The SAM template deploys:
-- S3 bucket for static website hosting
-- CloudFront distribution with SSL certificate
-- CloudFront Function for URL rewriting
-- Response headers policy for security headers
-
-## Deployment
-
-### Manual Deployment
-```bash
-sam build
-sam deploy
+```sh
+npm create astro@latest -- --template minimal
 ```
 
-### Automated Deployment
-The GitHub Actions workflows in `.github/workflows/` handle automated deployment:
-- `static-website-deploy.yml` - Deploys the frontend to S3 and invalidates CloudFront cache
-- `deploy-backend.yml` - Deploys backend infrastructure (if any)
+> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
 
-## Domain
+## 🚀 Project Structure
 
-The site is configured to serve from:
-- Primary domain: manut.dev
-- Wildcard subdomain: *.manut.dev
+Inside of your Astro project, you'll see the following folders and files:
+
+```text
+/
+├── public/
+├── src/
+│   └── pages/
+│       └── index.astro
+└── package.json
+```
+
+Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+
+There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
+
+Any static assets, like images, can be placed in the `public/` directory.
+
+## 🧞 Commands
+
+All commands are run from the root of the project, from a terminal:
+
+| Command                   | Action                                           |
+| :------------------------ | :----------------------------------------------- |
+| `npm install`             | Installs dependencies                            |
+| `npm run dev`             | Starts local dev server at `localhost:4321`      |
+| `npm run build`           | Build your production site to `./dist/`          |
+| `npm run preview`         | Preview your build locally, before deploying     |
+| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
+| `npm run astro -- --help` | Get help using the Astro CLI                     |
+
+## 👀 Want to learn more?
+
+Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
