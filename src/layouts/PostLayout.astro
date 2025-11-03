@@ -17,7 +17,7 @@ const { Content, headings } = await render(post);
 	
 	<div class="container mx-auto px-4 py-8 max-w-4xl">
 		<main>
-			<article class="prose prose-gray max-w-none">
+			<article class="max-w-none">
 				<header class="mb-8">
 					<h1 class="text-4xl font-bold mb-4 font-serif">{post.data.title}</h1>
 					<p class="text-muted-foreground text-sm font-sans mb-6">
@@ -44,7 +44,64 @@ const { Content, headings } = await render(post);
 						/>
 					)}
 				</header>
-				<div class="prose-headings:font-serif prose-p:font-serif prose-p:text-lg prose-p:leading-relaxed">
+				<div class="prose prose-gray max-w-none">
+					<style>
+						.prose {
+							color: hsl(0 0% 3.9%);
+							max-width: none;
+							line-height: 1.75;
+						}
+						
+						.prose h1 {
+							font-size: 2.25em;
+							margin-top: 0;
+							margin-bottom: 0.8888889em;
+							line-height: 1.1111111;
+							font-weight: 700;
+						}
+						
+						.prose h2 {
+							font-size: 1.5em;
+							margin-top: 2em;
+							margin-bottom: 1em;
+							line-height: 1.3333333;
+							font-weight: 700;
+						}
+						
+						.prose h3 {
+							font-size: 1.25em;
+							margin-top: 1.6em;
+							margin-bottom: 0.6em;
+							line-height: 1.6;
+							font-weight: 700;
+						}
+						
+						.prose p {
+							margin-top: 1.25em;
+							margin-bottom: 1.25em;
+						}
+						
+						.prose ul {
+							list-style-type: disc;
+							margin-top: 1.25em;
+							margin-bottom: 1.25em;
+							padding-left: 1.625em;
+						}
+						
+						.prose li {
+							margin-top: 0.5em;
+							margin-bottom: 0.5em;
+						}
+						
+						.prose li > p {
+							margin-top: 0.75em;
+							margin-bottom: 0.75em;
+						}
+						
+						.dark .prose {
+							color: hsl(0 0% 98%);
+						}
+					</style>
 					<Content />
 				</div>
 				<footer class="mt-12 pt-8 border-t">

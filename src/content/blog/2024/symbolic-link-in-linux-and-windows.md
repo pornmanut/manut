@@ -4,7 +4,7 @@ description: "How to create symbolic links in Linux and Windows"
 pubDate: 2024-05-11
 tags: ["Python", "Ubuntu", "Window"]
 heroImage: "/images/00003_symbolic_link.jpeg"
-featured: true
+featured: false
 ---
 
 Image created by AI through stable diffusion
