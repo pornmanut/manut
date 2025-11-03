@@ -1,0 +1,179 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+// Get all blog posts and sort by publication date (newest first)
+const allPosts = await getCollection('blog', ({ data }) => {
+  // Filter out draft posts
+  return data.draft !== true;
+});
+
+const posts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+// Get unique tags for filtering
+const allTags = [...new Set(allPosts.flatMap(post => post.data.tags || []))].sort();
+
+// Format date for display
+const formatDate = (date: Date) => {
+  return new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  }).format(date);
+};
+
+// Current URL for tag filtering
+const url = Astro.url.pathname;
+const currentTag = url.includes('/tag/') ? url.split('/tag/')[1]?.split('/')[0] : null;
+
+// Filter posts by tag if specified
+const filteredPosts = currentTag 
+  ? posts.filter(post => post.data.tags?.includes(currentTag))
+  : posts;
+---
+
+<BaseLayout title="Blog - Manut.dev" description="All blog posts">
+  <div class="space-y-8">
+    <section class="text-center py-12">
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">
+        Blog Posts
+      </h1>
+      <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+        All articles, tutorials, and thoughts on web development and technology.
+      </p>
+    </section>
+
+    <!-- Tag Filter -->
+    <section class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <div class="flex flex-wrap items-center gap-4">
+        <span class="text-gray-700 font-medium">Filter by tag:</span>
+        <div class="flex flex-wrap gap-2">
+          <a 
+            href="/blog/" 
+            class={`inline-block px-3 py-1 text-sm rounded-full transition-colors ${
+              !currentTag 
+                ? 'bg-blue-600 text-white' 
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            All Posts
+          </a>
+          {allTags.map((tag) => (
+            <a 
+              href={`/blog/tag/${tag}/`}
+              class={`inline-block px-3 py-1 text-sm rounded-full transition-colors ${
+                currentTag === tag 
+                  ? 'bg-blue-600 text-white' 
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              {tag}
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Posts List -->
+    <section class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+      {currentTag && (
+        <div class="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <p class="text-blue-800">
+            Showing posts tagged with <span class="font-semibold">{currentTag}</span>
+            <a href="/blog/" class="ml-2 text-blue-600 hover:text-blue-800 underline">
+              (clear filter)
+            </a>
+          </p>
+        </div>
+      )}
+
+      {filteredPosts.length > 0 ? (
+        <div class="space-y-8">
+          {filteredPosts.map((post) => (
+            <article class="border-b border-gray-200 pb-8 last:border-b-0 last:pb-0">
+              <div class="space-y-4">
+                <div class="flex items-center space-x-4 text-sm text-gray-500">
+                  <time datetime={post.data.pubDate.toISOString()}>
+                    {formatDate(post.data.pubDate)}
+                  </time>
+                  {post.data.author && (
+                    <>
+                      <span>•</span>
+                      <span>By {post.data.author}</span>
+                    </>
+                  )}
+                </div>
+                
+                <h2 class="text-2xl font-semibold text-gray-900">
+                  <a 
+                    href={`/blog/${post.slug}/`}
+                    class="hover:text-blue-600 transition-colors"
+                  >
+                    {post.data.title}
+                  </a>
+                </h2>
+                
+                {post.data.description && (
+                  <p class="text-gray-600 leading-relaxed text-lg">
+                    {post.data.description}
+                  </p>
+                )}
+                
+                {post.data.tags && post.data.tags.length > 0 && (
+                  <div class="flex flex-wrap gap-2">
+                    {post.data.tags.map((tag) => (
+                      <a 
+                        href={`/blog/tag/${tag}/`}
+                        class="inline-block bg-gray-100 text-gray-700 text-xs px-2 py-1 rounded-full hover:bg-gray-200 transition-colors"
+                      >
+                        {tag}
+                      </a>
+                    ))}
+                  </div>
+                )}
+                
+                <div class="pt-2">
+                  <a 
+                    href={`/blog/${post.slug}/`}
+                    class="text-blue-600 hover:text-blue-800 font-medium transition-colors"
+                  >
+                    Read full post →
+                  </a>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <div class="text-center py-12">
+          <p class="text-gray-600 text-lg">
+            {currentTag 
+              ? `No posts found with tag "${currentTag}".`
+              : 'No blog posts yet. Check back soon!'
+            }
+          </p>
+          {currentTag && (
+            <p class="mt-4">
+              <a href="/blog/" class="text-blue-600 hover:text-blue-800 underline">
+                View all posts
+              </a>
+            </p>
+          )}
+        </div>
+      )}
+    </section>
+
+    <!-- Back to Home -->
+    <section class="text-center">
+      <a 
+        href="/" 
+        class="inline-flex items-center space-x-2 text-gray-600 hover:text-gray-900 transition-colors"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+        <span>Back to Home</span>
+      </a>
+    </section>
+  </div>
+</BaseLayout>

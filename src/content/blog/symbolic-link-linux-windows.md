@@ -1,13 +1,15 @@
 ---
-title: "Symbolic link in Linux and Windows"
-description: "How to create symbolic links in Linux and Windows"
-pubDate: 2024-05-11
-tags: ["Python", "Ubuntu", "Window"]
-heroImage: "/images/00003_symbolic_link.jpeg"
-featured: false
+title: "Symbolic Link in Linux and Windows"
+pubDate: 2024-01-01
+description: "How to create symbolic links in Linux and Windows for sharing files between dual boot systems"
+author: "Manut"
+tags: ["linux", "windows", "symbolic-link", "dual-boot"]
+draft: false
 ---
 
-Image created by AI through stable diffusion
+# Symbolic Link in Linux and Windows
+
+*![Symbolic link in Linux and Windows](/images/00003_symbolic_link.jpeg)*
 
 ## Dual Booting Windows and Linux: Sharing AI Models
 
@@ -19,13 +21,13 @@ I've been using both Windows and Linux for a long time, with a dual boot system 
 
 In Linux, you can create symbolic links using the `ln -s` command. The syntax is as follows:
 
-```
+```bash
 ln -s [target] [link]
 ```
 
 For example, to link the model from a shared partition to the ComfyUI directory, you would use:
 
-```
+```bash
 ln -s /mnt/shared/model /home/vanilas/ComfyUI/model
 ```
 
@@ -33,13 +35,13 @@ ln -s /mnt/shared/model /home/vanilas/ComfyUI/model
 
 In Windows, you can create symbolic links using the `mklink` command. The syntax is as follows:
 
-```
+```bash
 mklink /D [link] [target]
 ```
 
 For example, to link the model from a shared partition to the ComfyUI directory, you would use:
 
-```
+```bash
 mklink /D C:\Users\Vanilas\ComfyUI\model D:\shared\model
 ```
 

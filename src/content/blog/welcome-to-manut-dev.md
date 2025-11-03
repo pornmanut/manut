@@ -1,15 +1,21 @@
 ---
-title: "Welcome to manut.dev"
-description: "Welcome to manut.dev!"
+title: "Welcome to Manut.dev"
 pubDate: 2024-05-04
-tags: ["Personal", "Updates"]
-heroImage: "/images/00000_dawn_sun.jpg"
-featured: false
+description: "Welcome to manut.dev! A dynamic platform powered by Hugo for recent updates and captivating content"
+author: "Manut"
+tags: ["welcome", "announcement"]
+draft: false
 ---
+
+# Welcome to Manut.dev
+
+May 4, 2024
+
+![Welcome to manut.dev](/images/00000_dawn_sun.jpg)
 
 Welcome to manut.dev!
 
-Image created by AI through stable diffusion
+*Image created by AI through stable diffusion*
 
 ## Welcome travelers!
 

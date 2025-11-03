@@ -1,11 +1,14 @@
 ---
-title: "Bootstrap Method for Character LoRAs: From 4 Images to 40"
-description: "How I figured out how to train character LoRAs using a bootstrap approach - starting with just 4 images and building up."
-pubDate: 2025-01-15
-tags: ["AI", "Stable Diffusion", "LoRA", "Tutorial"]
-heroImage: "/images/00001_vul.jpeg"
-featured: true
+title: "Training Character LoRAs for Stable Diffusion"
+pubDate: 2025-01-01
+description: "A step-by-step guide to training character LoRAs for Stable Diffusion models using a bootstrap approach"
+author: "Manut"
+tags: ["stable-diffusion", "ai", "lora", "training"]
+draft: false
 ---
+
+![Bootstrap Method for Character LoRAs: From 4 Images to 40](/images/00001_vul.jpeg)
+# Training Character LoRAs for Stable Diffusion
 
 I never trained character LoRAs before!
 
@@ -28,29 +31,37 @@ But if you move backward - from behind, from above - your character is bye bye b
 So? How to fix this? Here's my method:
 
 ### Step 1: Start with 4 Images
+
 You can copy just 1 image from somewhere and crop it somehow into 4 pieces.
 
 Those fucking small 4 images can't train a character LoRA, but they can train for style.
 
 ### Step 2: Create Detailed Tags
+
 You can use existing prompts to help this. Like your character is a fucking fox ears girl. How about we add:
-- 1girl, solo, fox ears, fox tail, blonde hair, yellow ears
+
+* 1girl, solo, fox ears, fox tail, blonde hair, yellow ears
 
 Everything that you think your character has as tags.
 
 ### Step 3: Train Style First
+
 Like when you train for "eiei21girl" you train this. Now "eiei21girl" is your style.
 
 ### Step 4: Bootstrap with Style LoRA
+
 After you train from just ground up like 4 images, you need to use this fucking style to do bootstrap. Use this LoRA to create images with all the features that you created:
-- 1girl, solo, fox ears, fox tail, blonde hair, yellow ears
+
+* 1girl, solo, fox ears, fox tail, blonde hair, yellow ears
 
 Use this as the prompt to generate images to get more of this character. Now you can create from side, from above, from below, or something like that.
 
 ### Step 5: Expand Your Dataset
+
 When you do this to get 16 images, you train style again. Now it's more easy to upgrade from 16 to 40.
 
 ### Step 6: Train Character LoRA
+
 When you got 40 images, you just change back to train character images with those 40 images - fucking all about that character that you selected, edited each image by yourself.
 
 And now you train again. You will get the best result.
