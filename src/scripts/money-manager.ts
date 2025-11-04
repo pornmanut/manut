@@ -127,6 +127,27 @@ export class MoneyManager {
     const validationResult = MoneyDataSchema.safeParse(newData);
     
     if (validationResult.success) {
+      // Check for potential issues with large datasets
+      if (validationResult.data.transactions.length > 10000) {
+        console.warn('Large dataset detected (>10,000 transactions). Performance may be affected.');
+      }
+      
+      // Check for duplicate transaction IDs
+      const transactionIds = validationResult.data.transactions.map((t: Transaction) => t.id);
+      const uniqueIds = new Set(transactionIds);
+      if (transactionIds.length !== uniqueIds.size) {
+        console.warn('Duplicate transaction IDs detected. Data integrity may be compromised.');
+        // Remove duplicates by keeping the first occurrence
+        const seenIds = new Set<string>();
+        validationResult.data.transactions = validationResult.data.transactions.filter((t: Transaction) => {
+          if (seenIds.has(t.id)) {
+            return false;
+          }
+          seenIds.add(t.id);
+          return true;
+        });
+      }
+      
       this.data = validationResult.data;
       this.saveDataToStorage();
     } else {
@@ -315,10 +336,30 @@ export function handleFileUpload(callback: (data: MoneyData) => void): void {
     const file = (event.target as HTMLInputElement).files?.[0];
     if (!file) return;
     
+    // Check file size (limit to 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      alert('File size too large. Please upload a file smaller than 10MB.');
+      return;
+    }
+    
+    // Check file extension
+    const fileName = file.name.toLowerCase();
+    if (!fileName.endsWith('.json')) {
+      alert('Invalid file type. Please upload a JSON file (.json extension).');
+      return;
+    }
+    
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
         const content = e.target?.result as string;
+        
+        // Check if content is empty
+        if (!content || content.trim().length === 0) {
+          alert('File is empty. Please upload a file with valid data.');
+          return;
+        }
+        
         const uploadedData = JSON.parse(content);
         
         const validationResult = MoneyDataSchema.safeParse(uploadedData);
@@ -330,9 +371,18 @@ export function handleFileUpload(callback: (data: MoneyData) => void): void {
           alert(`Invalid file format:\n${errorMessage}\n\nPlease upload a valid money manager data file.`);
         }
       } catch (error) {
-        alert('Error reading file. Please ensure it\'s a valid JSON file.');
+        if (error instanceof SyntaxError) {
+          alert('Invalid JSON format. Please ensure the file contains valid JSON.');
+        } else {
+          alert('Error reading file. Please ensure it\'s a valid JSON file.');
+        }
       }
     };
+    
+    reader.onerror = () => {
+      alert('Error reading file. Please try again.');
+    };
+    
     reader.readAsText(file);
   };
   
