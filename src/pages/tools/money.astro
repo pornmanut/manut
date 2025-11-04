@@ -99,9 +99,10 @@ import type { Transaction } from '../../scripts/money-manager.ts';
           </button>
         </div>
         
-        <!-- Add Transaction Form (hidden by default) -->
+        <!-- Add/Edit Transaction Form (hidden by default) -->
         <div id="add-transaction-form" class="hidden bg-gray-50 rounded-lg p-6 border border-gray-200">
-          <h3 class="text-lg font-semibold text-gray-900 mb-4">Add New Transaction</h3>
+          <h3 id="form-title" class="text-lg font-semibold text-gray-900 mb-4">Add New Transaction</h3>
+          <input type="hidden" id="editing-transaction-id" value="">
           <div class="grid gap-4 md:grid-cols-2">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Date</label>
@@ -123,12 +124,24 @@ import type { Transaction } from '../../scripts/money-manager.ts';
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Category</label>
-              <select 
-                id="transaction-category" 
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              >
-                <!-- Categories will be populated by JavaScript -->
-              </select>
+              <div class="flex space-x-2">
+                <select 
+                  id="transaction-category" 
+                  class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <!-- Categories will be populated by JavaScript -->
+                </select>
+                <button 
+                  type="button"
+                  id="manage-categories-btn"
+                  class="px-3 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors"
+                  title="Manage categories"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c-.94 1.543.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c.94-1.543-.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                  </svg>
+                </button>
+              </div>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Amount</label>
@@ -155,7 +168,7 @@ import type { Transaction } from '../../scripts/money-manager.ts';
               id="save-transaction-btn"
               class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
             >
-              Add Transaction
+              <span id="save-button-text">Add Transaction</span>
             </button>
             <button 
               id="cancel-transaction-btn"
@@ -175,6 +188,57 @@ import type { Transaction } from '../../scripts/money-manager.ts';
         </div>
       </div>
     </section>
+
+    <!-- Category Management Modal (hidden by default) -->
+    <div id="category-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Manage Categories</h3>
+        
+        <div class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Type</label>
+            <select id="category-type-select" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              <option value="income">Income</option>
+              <option value="expense">Expense</option>
+            </select>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Add New Category</label>
+            <div class="flex space-x-2">
+              <input 
+                type="text" 
+                id="new-category-input" 
+                placeholder="Enter category name"
+                class="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              />
+              <button 
+                id="add-category-btn"
+                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+          
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Current Categories</label>
+            <div id="current-categories-list" class="space-y-2 max-h-40 overflow-y-auto">
+              <!-- Categories will be populated by JavaScript -->
+            </div>
+          </div>
+        </div>
+        
+        <div class="flex justify-end space-x-3 mt-6">
+          <button 
+            id="close-category-modal-btn"
+            class="bg-gray-300 hover:bg-gray-400 text-gray-700 px-4 py-2 rounded-lg transition-colors"
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </BaseLayout>
 
@@ -211,6 +275,15 @@ import type { Transaction } from '../../scripts/money-manager.ts';
     const addTransactionForm = document.getElementById('add-transaction-form');
     const monthlySummaryContainer = document.getElementById('monthly-summary');
     const transactionListContainer = document.getElementById('transaction-list');
+
+    // Category management elements
+    const manageCategoriesBtn = document.getElementById('manage-categories-btn');
+    const categoryModal = document.getElementById('category-modal');
+    const categoryTypeSelect = document.getElementById('category-type-select');
+    const newCategoryInput = document.getElementById('new-category-input');
+    const addCategoryBtn = document.getElementById('add-category-btn');
+    const currentCategoriesList = document.getElementById('current-categories-list');
+    const closeCategoryModalBtn = document.getElementById('close-category-modal-btn');
 
     // Form elements
     const transactionDate = document.getElementById('transaction-date');
@@ -254,13 +327,23 @@ import type { Transaction } from '../../scripts/money-manager.ts';
         addTransactionForm.classList.add('hidden');
         transactionDescription.value = '';
         transactionAmount.value = '';
+        
+        // Reset form title and button text
+        const formTitle = document.getElementById('form-title');
+        const saveButtonText = document.getElementById('save-button-text');
+        const editingId = document.getElementById('editing-transaction-id');
+        
+        if (formTitle) formTitle.textContent = 'Add New Transaction';
+        if (saveButtonText) saveButtonText.textContent = 'Add Transaction';
+        if (editingId) editingId.value = '';
       }
     }
 
-    // Add new transaction
+    // Add or update transaction
     function handleAddTransaction() {
       if (!moneyManager) return;
       
+      const editingId = document.getElementById('editing-transaction-id')?.value;
       const date = transactionDate?.value;
       const type = transactionType?.value;
       const category = transactionCategory?.value;
@@ -272,8 +355,18 @@ import type { Transaction } from '../../scripts/money-manager.ts';
         return;
       }
 
+      if (amount <= 0) {
+        alert('Amount must be greater than 0');
+        return;
+      }
+
+      if (new Date(date) > new Date()) {
+        alert('Date cannot be in the future');
+        return;
+      }
+
       const transaction = {
-        id: Date.now().toString(),
+        id: editingId || Date.now().toString(),
         date,
         description,
         amount: type === 'expense' ? -Math.abs(amount) : Math.abs(amount),
@@ -282,13 +375,62 @@ import type { Transaction } from '../../scripts/money-manager.ts';
       };
 
       try {
-        moneyManager.addTransaction(transaction);
+        if (editingId) {
+          // Update existing transaction
+          const data = moneyManager.getData();
+          const index = data.transactions.findIndex(t => t.id === editingId);
+          if (index !== -1) {
+            data.transactions[index] = transaction;
+            moneyManager.setData(data);
+          }
+        } else {
+          // Add new transaction
+          moneyManager.addTransaction(transaction);
+        }
+        
         renderMonthlySummary();
         renderTransactions();
         hideAddTransactionForm();
       } catch (error) {
-        alert(`Error adding transaction: ${error.message}`);
+        alert(`Error saving transaction: ${error.message}`);
       }
+    }
+
+    // Edit transaction
+    function editTransaction(id) {
+      if (!moneyManager) return;
+      
+      const data = moneyManager.getData();
+      const transaction = data.transactions.find(t => t.id === id);
+      
+      if (!transaction) return;
+      
+      // Populate form with transaction data
+      const formTitle = document.getElementById('form-title');
+      const saveButtonText = document.getElementById('save-button-text');
+      const editingId = document.getElementById('editing-transaction-id');
+      const dateInput = document.getElementById('transaction-date');
+      const typeInput = document.getElementById('transaction-type');
+      const categoryInput = document.getElementById('transaction-category');
+      const amountInput = document.getElementById('transaction-amount');
+      const descriptionInput = document.getElementById('transaction-description');
+      
+      if (formTitle) formTitle.textContent = 'Edit Transaction';
+      if (saveButtonText) saveButtonText.textContent = 'Update Transaction';
+      if (editingId) editingId.value = id;
+      if (dateInput) dateInput.value = transaction.date;
+      if (typeInput) typeInput.value = transaction.type;
+      if (descriptionInput) descriptionInput.value = transaction.description;
+      if (amountInput) amountInput.value = Math.abs(transaction.amount).toString();
+      
+      // Update categories and set the correct category
+      updateCategories();
+      setTimeout(() => {
+        if (categoryInput) categoryInput.value = transaction.category;
+      }, 100);
+      
+      // Show the form
+      showAddTransactionForm();
     }
 
     // Delete transaction
@@ -388,14 +530,26 @@ import type { Transaction } from '../../scripts/money-manager.ts';
               }">
                 ${transaction.type === 'income' ? '+' : '-'}$${Math.abs(transaction.amount).toFixed(2)}
               </span>
-              <button 
-                onclick="deleteTransaction('${transaction.id}')"
-                class="text-red-600 hover:text-red-800 transition-colors"
-              >
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                </svg>
-              </button>
+              <div class="flex space-x-2">
+                <button 
+                  onclick="editTransaction('${transaction.id}')"
+                  class="text-blue-600 hover:text-blue-800 transition-colors"
+                  title="Edit transaction"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                  </svg>
+                </button>
+                <button 
+                  onclick="deleteTransaction('${transaction.id}')"
+                  class="text-red-600 hover:text-red-800 transition-colors"
+                  title="Delete transaction"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                  </svg>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -451,6 +605,84 @@ import type { Transaction } from '../../scripts/money-manager.ts';
       }
     }
 
+    // Category management functions
+    function showCategoryModal() {
+      if (categoryModal) {
+        categoryModal.classList.remove('hidden');
+        updateCategoriesList();
+      }
+    }
+
+    function hideCategoryModal() {
+      if (categoryModal) {
+        categoryModal.classList.add('hidden');
+      }
+    }
+
+    function updateCategoriesList() {
+      if (!currentCategoriesList || !moneyManager) return;
+      
+      const type = categoryTypeSelect?.value || 'income';
+      const categories = moneyManager.getCategories(type);
+      
+      currentCategoriesList.innerHTML = categories.map(category => `
+        <div class="flex justify-between items-center p-2 bg-gray-50 rounded">
+          <span class="text-sm">${category}</span>
+          <button 
+            onclick="removeCategory('${type}', '${category}')"
+            class="text-red-600 hover:text-red-800 text-sm"
+          >
+            Remove
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function addNewCategory() {
+      if (!moneyManager) return;
+      
+      const type = categoryTypeSelect?.value;
+      const categoryName = newCategoryInput?.value?.trim();
+      
+      if (!type || !categoryName) {
+        alert('Please select a type and enter a category name');
+        return;
+      }
+      
+      try {
+        const data = moneyManager.getData();
+        if (!data.categories[type].includes(categoryName)) {
+          data.categories[type].push(categoryName);
+          data.categories[type].sort(); // Sort alphabetically
+          moneyManager.setData(data);
+          
+          if (newCategoryInput) newCategoryInput.value = '';
+          updateCategoriesList();
+          updateCategories(); // Update the transaction form categories
+        } else {
+          alert('This category already exists');
+        }
+      } catch (error) {
+        alert(`Error adding category: ${error.message}`);
+      }
+    }
+
+    function removeCategory(type, category) {
+      if (!moneyManager) return;
+      
+      if (confirm(`Remove "${category}" from ${type} categories?`)) {
+        try {
+          const data = moneyManager.getData();
+          data.categories[type] = data.categories[type].filter(c => c !== category);
+          moneyManager.setData(data);
+          updateCategoriesList();
+          updateCategories(); // Update the transaction form categories
+        } catch (error) {
+          alert(`Error removing category: ${error.message}`);
+        }
+      }
+    }
+
     // Attach event listeners
     function attachEventListeners() {
       if (uploadBtn) uploadBtn.addEventListener('click', handleUpload);
@@ -464,10 +696,27 @@ import type { Transaction } from '../../scripts/money-manager.ts';
       if (transactionType) {
         transactionType.addEventListener('change', updateCategories);
       }
+      
+      // Category management event listeners
+      if (manageCategoriesBtn) manageCategoriesBtn.addEventListener('click', showCategoryModal);
+      if (closeCategoryModalBtn) closeCategoryModalBtn.addEventListener('click', hideCategoryModal);
+      if (addCategoryBtn) addCategoryBtn.addEventListener('click', addNewCategory);
+      if (categoryTypeSelect) categoryTypeSelect.addEventListener('change', updateCategoriesList);
+      
+      // Close modal when clicking outside
+      if (categoryModal) {
+        categoryModal.addEventListener('click', (e) => {
+          if (e.target === categoryModal) {
+            hideCategoryModal();
+          }
+        });
+      }
     }
 
-    // Make deleteTransaction globally available for inline onclick handlers
+    // Make deleteTransaction, editTransaction, and removeCategory globally available for inline onclick handlers
     window.deleteTransaction = deleteTransaction;
+    window.editTransaction = editTransaction;
+    window.removeCategory = removeCategory;
 
     // Initialize the app
     updateCategories();
