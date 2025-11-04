@@ -42,6 +42,16 @@ import type { Transaction } from '../../scripts/money-manager.ts';
           </button>
           
           <button 
+            id="load-sample-btn"
+            class="inline-flex items-center space-x-2 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
+            <span>Load Sample Data</span>
+          </button>
+          
+          <button 
             id="clear-btn"
             class="inline-flex items-center space-x-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors"
           >
@@ -54,6 +64,7 @@ import type { Transaction } from '../../scripts/money-manager.ts';
         
         <div class="text-sm text-gray-600">
           <p>Your data is stored locally in your browser. Use the download button to backup your data as a JSON file.</p>
+          <p class="mt-1">New to Money Manager? Try the <strong>Load Sample Data</strong> button to see how it works.</p>
         </div>
       </div>
     </section>
@@ -66,7 +77,7 @@ import type { Transaction } from '../../scripts/money-manager.ts';
         <div id="monthly-summary" class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <!-- Monthly summary cards will be inserted here by JavaScript -->
           <div class="text-center text-gray-500 col-span-full py-8">
-            No data available. Upload a JSON file or add transactions to get started.
+            No data available. Upload a JSON file, load sample data, or add transactions to get started.
           </div>
         </div>
       </div>
@@ -82,7 +93,7 @@ import type { Transaction } from '../../scripts/money-manager.ts';
             class="inline-flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
           >
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m6 0H6"/>
             </svg>
             <span>Add Transaction</span>
           </button>
@@ -167,251 +178,304 @@ import type { Transaction } from '../../scripts/money-manager.ts';
   </div>
 </BaseLayout>
 
-<script type="module">
-  import { MoneyManager, formatDate, formatMonth, downloadData, handleFileUpload } from '../../scripts/money-manager.js';
+<script src="../../scripts/money-manager.ts"></script>
+<script is:inline>
+  // Initialize money manager when the script is loaded
+  let moneyManager;
+  
+  // Wait for MoneyManager to be available from the loaded TypeScript file
+  function initializeMoneyManager() {
+    if (typeof MoneyManager !== 'undefined') {
+      try {
+        moneyManager = new MoneyManager();
+        initializeApp();
+      } catch (error) {
+        console.error('Error initializing MoneyManager:', error);
+      }
+    } else {
+      // Retry after a short delay if not loaded yet
+      setTimeout(initializeMoneyManager, 100);
+    }
+  }
+  
+  // Initialize the app after MoneyManager is ready
+  function initializeApp() {
+    // DOM elements
+    const uploadBtn = document.getElementById('upload-btn');
+    const downloadBtn = document.getElementById('download-btn');
+    const loadSampleBtn = document.getElementById('load-sample-btn');
+    const clearBtn = document.getElementById('clear-btn');
+    const addTransactionBtn = document.getElementById('add-transaction-btn');
+    const saveTransactionBtn = document.getElementById('save-transaction-btn');
+    const cancelTransactionBtn = document.getElementById('cancel-transaction-btn');
+    const addTransactionForm = document.getElementById('add-transaction-form');
+    const monthlySummaryContainer = document.getElementById('monthly-summary');
+    const transactionListContainer = document.getElementById('transaction-list');
 
-  // Initialize money manager
-  const moneyManager = new MoneyManager();
+    // Form elements
+    const transactionDate = document.getElementById('transaction-date');
+    const transactionType = document.getElementById('transaction-type');
+    const transactionCategory = document.getElementById('transaction-category');
+    const transactionAmount = document.getElementById('transaction-amount');
+    const transactionDescription = document.getElementById('transaction-description');
 
-  // DOM elements
-  const uploadBtn = document.getElementById('upload-btn');
-  const downloadBtn = document.getElementById('download-btn');
-  const clearBtn = document.getElementById('clear-btn');
-  const addTransactionBtn = document.getElementById('add-transaction-btn');
-  const saveTransactionBtn = document.getElementById('save-transaction-btn');
-  const cancelTransactionBtn = document.getElementById('cancel-transaction-btn');
-  const addTransactionForm = document.getElementById('add-transaction-form');
-  const monthlySummaryContainer = document.getElementById('monthly-summary');
-  const transactionListContainer = document.getElementById('transaction-list');
+    // Update category dropdown based on transaction type
+    function updateCategories() {
+      const type = transactionType?.value;
+      if (!type || !moneyManager) return;
 
-  // Form elements
-  const transactionDate = document.getElementById('transaction-date');
-  const transactionType = document.getElementById('transaction-type');
-  const transactionCategory = document.getElementById('transaction-category');
-  const transactionAmount = document.getElementById('transaction-amount');
-  const transactionDescription = document.getElementById('transaction-description');
+      const categories = moneyManager.getCategories(type);
+      
+      if (transactionCategory) {
+        transactionCategory.innerHTML = '';
+        categories.forEach(category => {
+          const option = document.createElement('option');
+          option.value = category;
+          option.textContent = category;
+          transactionCategory.appendChild(option);
+        });
+      }
+    }
 
-  // Initialize app
-  function init() {
+    // Show/hide add transaction form
+    function showAddTransactionForm() {
+      if (addTransactionForm) {
+        addTransactionForm.classList.remove('hidden');
+        
+        // Set today's date as default
+        if (transactionDate) {
+          transactionDate.value = new Date().toISOString().split('T')[0];
+        }
+      }
+    }
+
+    function hideAddTransactionForm() {
+      if (addTransactionForm) {
+        addTransactionForm.classList.add('hidden');
+        transactionDescription.value = '';
+        transactionAmount.value = '';
+      }
+    }
+
+    // Add new transaction
+    function handleAddTransaction() {
+      if (!moneyManager) return;
+      
+      const date = transactionDate?.value;
+      const type = transactionType?.value;
+      const category = transactionCategory?.value;
+      const amount = parseFloat(transactionAmount?.value || '0');
+      const description = transactionDescription?.value;
+
+      if (!date || !amount || !description) {
+        alert('Please fill in all fields');
+        return;
+      }
+
+      const transaction = {
+        id: Date.now().toString(),
+        date,
+        description,
+        amount: type === 'expense' ? -Math.abs(amount) : Math.abs(amount),
+        category,
+        type
+      };
+
+      try {
+        moneyManager.addTransaction(transaction);
+        renderMonthlySummary();
+        renderTransactions();
+        hideAddTransactionForm();
+      } catch (error) {
+        alert(`Error adding transaction: ${error.message}`);
+      }
+    }
+
+    // Delete transaction
+    function deleteTransaction(id) {
+      if (!moneyManager) return;
+      
+      if (confirm('Are you sure you want to delete this transaction?')) {
+        moneyManager.deleteTransaction(id);
+        renderMonthlySummary();
+        renderTransactions();
+      }
+    }
+
+    // Render monthly summary
+    function renderMonthlySummary() {
+      if (!monthlySummaryContainer || !moneyManager) return;
+
+      const summaries = moneyManager.calculateMonthlySummaries();
+      
+      if (summaries.length === 0) {
+        monthlySummaryContainer.innerHTML = `
+          <div class="text-center text-gray-500 col-span-full py-8">
+            No data available. Upload a JSON file, load sample data, or add transactions to get started.
+          </div>
+        `;
+        return;
+      }
+      
+      monthlySummaryContainer.innerHTML = summaries.map(summary => `
+        <div class="bg-gray-50 rounded-lg p-6 border border-gray-200">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">${formatMonth(summary.month)}</h3>
+          <div class="space-y-2">
+            <div class="flex justify-between">
+              <span class="text-gray-600">Income:</span>
+              <span class="text-green-600 font-medium">$${summary.income.toFixed(2)}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-gray-600">Expenses:</span>
+              <span class="text-red-600 font-medium">$${summary.expenses.toFixed(2)}</span>
+            </div>
+            <div class="flex justify-between font-semibold pt-2 border-t border-gray-200">
+              <span>Net:</span>
+              <span class="${summary.net >= 0 ? 'text-green-600' : 'text-red-600'}">
+                $${summary.net.toFixed(2)}
+              </span>
+            </div>
+            <div class="text-sm text-gray-500">
+              ${summary.transactionCount} transactions
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Render transactions
+    function renderTransactions() {
+      if (!transactionListContainer || !moneyManager) return;
+
+      const data = moneyManager.getData();
+      
+      if (data.transactions.length === 0) {
+        transactionListContainer.innerHTML = `
+          <div class="text-center text-gray-500 py-8">
+            No transactions yet. Add your first transaction to get started.
+          </div>
+        `;
+        return;
+      }
+      
+      // Sort transactions by date (newest first)
+      const sortedTransactions = [...data.transactions].sort((a, b) => 
+        b.date.localeCompare(a.date)
+      );
+      
+      transactionListContainer.innerHTML = sortedTransactions.map(transaction => `
+        <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+          <div class="flex justify-between items-start">
+            <div class="flex-1">
+              <div class="flex items-center space-x-3">
+                <span class="text-sm text-gray-500">${formatDate(transaction.date)}</span>
+                <span class="inline-block px-2 py-1 text-xs rounded-full ${
+                  transaction.type === 'income' 
+                    ? 'bg-green-100 text-green-700' 
+                    : 'bg-red-100 text-red-700'
+                }">
+                  ${transaction.type}
+                </span>
+                <span class="inline-block px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">
+                  ${transaction.category}
+                </span>
+              </div>
+              <h4 class="font-medium text-gray-900 mt-2">${transaction.description}</h4>
+            </div>
+            <div class="flex items-center space-x-3">
+              <span class="text-lg font-semibold ${
+                transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
+              }">
+                ${transaction.type === 'income' ? '+' : '-'}$${Math.abs(transaction.amount).toFixed(2)}
+              </span>
+              <button 
+                onclick="deleteTransaction('${transaction.id}')"
+                class="text-red-600 hover:text-red-800 transition-colors"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // File operations
+    function handleUpload() {
+      if (!moneyManager) return;
+      
+      handleFileUpload((data) => {
+        try {
+          moneyManager.setData(data);
+          renderMonthlySummary();
+          renderTransactions();
+          alert('Data uploaded successfully!');
+        } catch (error) {
+          alert(`Error uploading data: ${error.message}`);
+        }
+      });
+    }
+
+    function handleDownload() {
+      if (!moneyManager) return;
+      
+      downloadData(moneyManager.getData());
+    }
+
+    function handleLoadSample() {
+      if (!moneyManager) return;
+      
+      if (confirm('This will replace your current data with sample transactions. Continue?')) {
+        try {
+          loadSampleData((data) => {
+            moneyManager.setData(data);
+            renderMonthlySummary();
+            renderTransactions();
+            alert('Sample data loaded successfully!');
+          });
+        } catch (error) {
+          alert(`Error loading sample data: ${error.message}`);
+        }
+      }
+    }
+
+    function handleClear() {
+      if (!moneyManager) return;
+      
+      if (confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
+        moneyManager.clearAllData();
+        renderMonthlySummary();
+        renderTransactions();
+      }
+    }
+
+    // Attach event listeners
+    function attachEventListeners() {
+      if (uploadBtn) uploadBtn.addEventListener('click', handleUpload);
+      if (downloadBtn) downloadBtn.addEventListener('click', handleDownload);
+      if (loadSampleBtn) loadSampleBtn.addEventListener('click', handleLoadSample);
+      if (clearBtn) clearBtn.addEventListener('click', handleClear);
+      if (addTransactionBtn) addTransactionBtn.addEventListener('click', showAddTransactionForm);
+      if (saveTransactionBtn) saveTransactionBtn.addEventListener('click', handleAddTransaction);
+      if (cancelTransactionBtn) cancelTransactionBtn.addEventListener('click', hideAddTransactionForm);
+      
+      if (transactionType) {
+        transactionType.addEventListener('change', updateCategories);
+      }
+    }
+
+    // Make deleteTransaction globally available for inline onclick handlers
+    window.deleteTransaction = deleteTransaction;
+
+    // Initialize the app
     updateCategories();
     renderMonthlySummary();
     renderTransactions();
     attachEventListeners();
   }
 
-  // Attach event listeners
-  function attachEventListeners() {
-    uploadBtn?.addEventListener('click', handleUpload);
-    downloadBtn?.addEventListener('click', handleDownload);
-    clearBtn?.addEventListener('click', handleClear);
-    addTransactionBtn?.addEventListener('click', showAddTransactionForm);
-    saveTransactionBtn?.addEventListener('click', handleAddTransaction);
-    cancelTransactionBtn?.addEventListener('click', hideAddTransactionForm);
-    transactionType?.addEventListener('change', updateCategories);
-  }
-
-  // Update category dropdown based on transaction type
-  function updateCategories() {
-    const type = transactionType?.value;
-    if (!type) return;
-
-    const categories = moneyManager.getCategories(type);
-    
-    if (transactionCategory) {
-      transactionCategory.innerHTML = '';
-      categories.forEach(category => {
-        const option = document.createElement('option');
-        option.value = category;
-        option.textContent = category;
-        transactionCategory.appendChild(option);
-      });
-    }
-  }
-
-  // Show/hide add transaction form
-  function showAddTransactionForm() {
-    if (addTransactionForm) {
-      addTransactionForm.classList.remove('hidden');
-      
-      // Set today's date as default
-      if (transactionDate) {
-        transactionDate.value = new Date().toISOString().split('T')[0];
-      }
-    }
-  }
-
-  function hideAddTransactionForm() {
-    if (addTransactionForm) {
-      addTransactionForm.classList.add('hidden');
-      
-      // Clear form
-      if (transactionDescription) transactionDescription.value = '';
-      if (transactionAmount) transactionAmount.value = '';
-    }
-  }
-
-  // Add new transaction
-  function handleAddTransaction() {
-    const date = transactionDate?.value;
-    const type = transactionType?.value;
-    const category = transactionCategory?.value;
-    const amount = parseFloat(transactionAmount?.value || '0');
-    const description = transactionDescription?.value;
-
-    if (!date || !amount || !description) {
-      alert('Please fill in all fields');
-      return;
-    }
-
-    const transaction = {
-      id: Date.now().toString(),
-      date,
-      description,
-      amount: type === 'expense' ? -Math.abs(amount) : Math.abs(amount),
-      category,
-      type
-    };
-
-    moneyManager.addTransaction(transaction);
-    renderMonthlySummary();
-    renderTransactions();
-    hideAddTransactionForm();
-  }
-
-  // Delete transaction
-  function deleteTransaction(id) {
-    if (confirm('Are you sure you want to delete this transaction?')) {
-      moneyManager.deleteTransaction(id);
-      renderMonthlySummary();
-      renderTransactions();
-    }
-  }
-
-  // Render monthly summary
-  function renderMonthlySummary() {
-    if (!monthlySummaryContainer) return;
-
-    const summaries = moneyManager.calculateMonthlySummaries();
-    
-    if (summaries.length === 0) {
-      monthlySummaryContainer.innerHTML = `
-        <div class="text-center text-gray-500 col-span-full py-8">
-          No data available. Upload a JSON file or add transactions to get started.
-        </div>
-      `;
-      return;
-    }
-    
-    monthlySummaryContainer.innerHTML = summaries.map(summary => `
-      <div class="bg-gray-50 rounded-lg p-6 border border-gray-200">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">${formatMonth(summary.month)}</h3>
-        <div class="space-y-2">
-          <div class="flex justify-between">
-            <span class="text-gray-600">Income:</span>
-            <span class="text-green-600 font-medium">$${summary.income.toFixed(2)}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-600">Expenses:</span>
-            <span class="text-red-600 font-medium">$${summary.expenses.toFixed(2)}</span>
-          </div>
-          <div class="flex justify-between font-semibold pt-2 border-t border-gray-200">
-            <span>Net:</span>
-            <span class="${summary.net >= 0 ? 'text-green-600' : 'text-red-600'}">
-              $${summary.net.toFixed(2)}
-            </span>
-          </div>
-          <div class="text-sm text-gray-500">
-            ${summary.transactionCount} transactions
-          </div>
-        </div>
-      </div>
-    `).join('');
-  }
-
-  // Render transactions
-  function renderTransactions() {
-    if (!transactionListContainer) return;
-
-    const data = moneyManager.getData();
-    
-    if (data.transactions.length === 0) {
-      transactionListContainer.innerHTML = `
-        <div class="text-center text-gray-500 py-8">
-          No transactions yet. Add your first transaction to get started.
-        </div>
-      `;
-      return;
-    }
-    
-    // Sort transactions by date (newest first)
-    const sortedTransactions = [...data.transactions].sort((a, b) => 
-      b.date.localeCompare(a.date)
-    );
-    
-    transactionListContainer.innerHTML = sortedTransactions.map(transaction => `
-      <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-        <div class="flex justify-between items-start">
-          <div class="flex-1">
-            <div class="flex items-center space-x-3">
-              <span class="text-sm text-gray-500">${formatDate(transaction.date)}</span>
-              <span class="inline-block px-2 py-1 text-xs rounded-full ${
-                transaction.type === 'income' 
-                  ? 'bg-green-100 text-green-700' 
-                  : 'bg-red-100 text-red-700'
-              }">
-                ${transaction.type}
-              </span>
-              <span class="inline-block px-2 py-1 text-xs bg-gray-100 text-gray-700 rounded-full">
-                ${transaction.category}
-              </span>
-            </div>
-            <h4 class="font-medium text-gray-900 mt-2">${transaction.description}</h4>
-          </div>
-          <div class="flex items-center space-x-3">
-            <span class="text-lg font-semibold ${
-              transaction.type === 'income' ? 'text-green-600' : 'text-red-600'
-            }">
-              ${transaction.type === 'income' ? '+' : '-'}$${Math.abs(transaction.amount).toFixed(2)}
-            </span>
-            <button 
-              onclick="deleteTransaction('${transaction.id}')"
-              class="text-red-600 hover:text-red-800 transition-colors"
-            >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-              </svg>
-            </button>
-          </div>
-        </div>
-      </div>
-    `).join('');
-  }
-
-  // File operations
-  function handleUpload() {
-    handleFileUpload((data) => {
-      moneyManager.setData(data);
-      renderMonthlySummary();
-      renderTransactions();
-      alert('Data uploaded successfully!');
-    });
-  }
-
-  function handleDownload() {
-    downloadData(moneyManager.getData());
-  }
-
-  function handleClear() {
-    if (confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
-      moneyManager.clearAllData();
-      renderMonthlySummary();
-      renderTransactions();
-    }
-  }
-
-  // Make deleteTransaction globally available for inline onclick handlers
-  window.deleteTransaction = deleteTransaction;
-
-  // Initialize when DOM is loaded
-  document.addEventListener('DOMContentLoaded', init);
+  // Start initialization when DOM is ready
+  document.addEventListener('DOMContentLoaded', initializeMoneyManager);
 </script>

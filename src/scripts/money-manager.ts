@@ -1,4 +1,35 @@
-// TypeScript interfaces for the money manager
+// Zod schemas for validation (simplified for client-side)
+const TransactionSchema = {
+  safeParse: (data: any) => {
+    if (!data || typeof data !== 'object') return { success: false, error: 'Invalid object' };
+    if (typeof data.id !== 'string') return { success: false, error: 'Invalid id' };
+    if (!data.date || !/^\d{4}-\d{2}-\d{2}$/.test(data.date)) return { success: false, error: 'Invalid date format' };
+    if (typeof data.description !== 'string' || data.description.length === 0) return { success: false, error: 'Invalid description' };
+    if (typeof data.amount !== 'number') return { success: false, error: 'Invalid amount' };
+    if (typeof data.category !== 'string' || data.category.length === 0) return { success: false, error: 'Invalid category' };
+    if (!['income', 'expense'].includes(data.type)) return { success: false, error: 'Invalid type' };
+    return { success: true, data };
+  }
+};
+
+const MoneyDataSchema = {
+  safeParse: (data: any) => {
+    if (!data || typeof data !== 'object') return { success: false, error: 'Invalid object' };
+    if (!Array.isArray(data.transactions)) return { success: false, error: 'Invalid transactions array' };
+    if (!data.categories || typeof data.categories !== 'object') return { success: false, error: 'Invalid categories object' };
+    if (!Array.isArray(data.categories.income) || !Array.isArray(data.categories.expense)) return { success: false, error: 'Invalid category arrays' };
+    
+    // Validate each transaction
+    for (const transaction of data.transactions) {
+      const result = TransactionSchema.safeParse(transaction);
+      if (!result.success) return { success: false, error: 'Invalid transaction in data' };
+    }
+    
+    return { success: true, data };
+  }
+};
+
+// TypeScript interfaces
 export interface Transaction {
   id: string;
   date: string;
@@ -24,7 +55,33 @@ export interface MonthlySummary {
   transactionCount: number;
 }
 
-// Money Manager class for better organization
+// Sample data structure for first-time users
+export const sampleData: MoneyData = {
+  transactions: [
+    {
+      id: '1',
+      date: new Date().toISOString().split('T')[0],
+      description: 'Sample salary income',
+      amount: 3000,
+      category: 'Salary',
+      type: 'income'
+    },
+    {
+      id: '2',
+      date: new Date().toISOString().split('T')[0],
+      description: 'Sample grocery expense',
+      amount: -150,
+      category: 'Food',
+      type: 'expense'
+    }
+  ],
+  categories: {
+    income: ['Salary', 'Freelance', 'Investments', 'Other Income'],
+    expense: ['Food', 'Transportation', 'Housing', 'Entertainment', 'Utilities', 'Healthcare', 'Other Expenses']
+  }
+};
+
+// Money Manager class
 export class MoneyManager {
   private data: MoneyData = {
     transactions: [],
@@ -42,9 +99,18 @@ export class MoneyManager {
     const stored = localStorage.getItem('moneyManagerData');
     if (stored) {
       try {
-        this.data = JSON.parse(stored);
+        const parsedData = JSON.parse(stored);
+        const validationResult = MoneyDataSchema.safeParse(parsedData);
+        
+        if (validationResult.success) {
+          this.data = validationResult.data;
+        } else {
+          console.error('Invalid data format in storage:', validationResult.error || 'Unknown error');
+          this.clearAllData();
+        }
       } catch (e) {
         console.error('Error loading data:', e);
+        this.clearAllData();
       }
     }
   }
@@ -58,13 +124,25 @@ export class MoneyManager {
   }
 
   public setData(newData: MoneyData): void {
-    this.data = newData;
-    this.saveDataToStorage();
+    const validationResult = MoneyDataSchema.safeParse(newData);
+    
+    if (validationResult.success) {
+      this.data = validationResult.data;
+      this.saveDataToStorage();
+    } else {
+      throw new Error(`Invalid data format: ${validationResult.error || 'Unknown error'}`);
+    }
   }
 
   public addTransaction(transaction: Transaction): void {
-    this.data.transactions.push(transaction);
-    this.saveDataToStorage();
+    const validationResult = TransactionSchema.safeParse(transaction);
+    
+    if (validationResult.success) {
+      this.data.transactions.push(validationResult.data);
+      this.saveDataToStorage();
+    } else {
+      throw new Error(`Invalid transaction format: ${validationResult.error || 'Unknown error'}`);
+    }
   }
 
   public deleteTransaction(id: string): void {
@@ -168,13 +246,15 @@ export function handleFileUpload(callback: (data: MoneyData) => void): void {
     reader.onload = (e) => {
       try {
         const content = e.target?.result as string;
-        const uploadedData = JSON.parse(content) as MoneyData;
+        const uploadedData = JSON.parse(content);
         
-        // Validate uploaded data
-        if (uploadedData.transactions && Array.isArray(uploadedData.transactions)) {
-          callback(uploadedData);
+        const validationResult = MoneyDataSchema.safeParse(uploadedData);
+        
+        if (validationResult.success) {
+          callback(validationResult.data);
         } else {
-          alert('Invalid file format. Please upload a valid money manager data file.');
+          const errorMessage = validationResult.error || 'Invalid file format';
+          alert(`Invalid file format:\n${errorMessage}\n\nPlease upload a valid money manager data file.`);
         }
       } catch (error) {
         alert('Error reading file. Please ensure it\'s a valid JSON file.');
@@ -184,4 +264,18 @@ export function handleFileUpload(callback: (data: MoneyData) => void): void {
   };
   
   input.click();
+}
+
+export function loadSampleData(callback: (data: MoneyData) => void): void {
+  callback(sampleData);
+}
+
+// Export to global scope for use in inline scripts
+if (typeof window !== 'undefined') {
+  (window as any).MoneyManager = MoneyManager;
+  (window as any).formatDate = formatDate;
+  (window as any).formatMonth = formatMonth;
+  (window as any).downloadData = downloadData;
+  (window as any).handleFileUpload = handleFileUpload;
+  (window as any).loadSampleData = loadSampleData;
 }
