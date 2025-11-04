@@ -1,0 +1,35 @@
+name: Invalidate CloudFront Cache
+
+on:
+  workflow_dispatch:
+    inputs:
+      paths:
+        description: 'Paths to invalidate (default: /*)'
+        required: false
+        default: '/*'
+        type: string
+
+env:
+  AWS_REGION: ap-southeast-1
+  ROLE_TO_ASSUME: arn:aws:iam::${{ vars.AWS_ACCOUNT_ID }}:role/Manut-GithubAction-Role
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  invalidate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ env.ROLE_TO_ASSUME }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Invalidate CloudFront cache
+        run: |
+          aws cloudfront create-invalidation \
+            --distribution-id ${{ vars.CLOUDFRONT_DISTRIBUTION_ID }} \
+            --paths "${{ github.event.inputs.paths || '/*' }}"
