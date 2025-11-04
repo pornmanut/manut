@@ -1,0 +1,94 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="Tools - Manut.dev" description="Collection of useful tools and utilities">
+  <div class="space-y-8">
+    <section class="text-center py-12">
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">
+        Tools & Utilities
+      </h1>
+      <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+        A collection of useful tools and utilities to help with everyday tasks.
+        Built with Astro and Tailwind CSS.
+      </p>
+    </section>
+
+    <section class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+      <div class="space-y-6">
+        <h2 class="text-2xl font-semibold text-gray-900">Available Tools</h2>
+        
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <!-- Money Manager Tool Card -->
+          <div class="bg-gray-50 rounded-lg p-6 border border-gray-200 hover:shadow-md transition-shadow">
+            <div class="flex items-center space-x-3 mb-4">
+              <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              </div>
+              <h3 class="text-lg font-semibold text-gray-900">Money Manager</h3>
+            </div>
+            
+            <p class="text-gray-600 mb-4">
+              Track your income and expenses by month with this simple money management tool. 
+              Add transactions, categorize them, and view monthly summaries with totals and net balance.
+            </p>
+            
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-gray-500">Personal Finance</span>
+              <a 
+                href="/tools/money" 
+                class="inline-flex items-center space-x-1 text-blue-600 hover:text-blue-800 font-medium text-sm transition-colors"
+              >
+                <span>Open Tool</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+              </a>
+            </div>
+          </div>
+          
+          <!-- Placeholder for future tools -->
+          <div class="bg-gray-50 rounded-lg p-6 border border-gray-200 border-dashed">
+            <div class="flex items-center space-x-3 mb-4">
+              <div class="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                </svg>
+              </div>
+              <h3 class="text-lg font-semibold text-gray-500">More Tools Coming Soon</h3>
+            </div>
+            
+            <p class="text-gray-400 mb-4">
+              Additional tools and utilities are currently in development. 
+              Check back soon for more helpful resources.
+            </p>
+            
+            <div class="flex items-center justify-between">
+              <span class="text-sm text-gray-400">Coming Soon</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+      <div class="space-y-6">
+        <h2 class="text-2xl font-semibold text-gray-900">About These Tools</h2>
+        
+        <div class="prose prose-gray max-w-none">
+          <p class="text-gray-600 leading-relaxed mb-4">
+            These tools are designed to be simple, privacy-focused utilities that work entirely in your browser. 
+            No data is sent to external servers - everything stays on your device.
+          </p>
+          
+          <p class="text-gray-600 leading-relaxed mb-4">
+            Each tool is built with modern web technologies and follows responsive design principles, 
+            ensuring they work well on desktop, tablet, and mobile devices.
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
