@@ -198,6 +198,79 @@ export class MoneyManager {
     };
     this.saveDataToStorage();
   }
+
+  // Dashboard helper methods
+  public getFilteredTransactions(monthFilter?: string, categoryFilter?: string): Transaction[] {
+    let transactions = [...this.data.transactions];
+    
+    // Filter by month
+    if (monthFilter) {
+      transactions = transactions.filter(t => t.date.startsWith(monthFilter));
+    }
+    
+    // Filter by category
+    if (categoryFilter) {
+      transactions = transactions.filter(t => t.category === categoryFilter);
+    }
+    
+    return transactions;
+  }
+
+  public calculateSummaryFromTransactions(transactions: Transaction[]): {
+    income: number;
+    expenses: number;
+    net: number;
+    transactionCount: number;
+    categoryData: {
+      income?: { [category: string]: number };
+      expense?: { [category: string]: number };
+    };
+  } {
+    let income = 0;
+    let expenses = 0;
+    const categoryData: {
+      income?: { [category: string]: number };
+      expense?: { [category: string]: number };
+    } = {};
+    
+    transactions.forEach(transaction => {
+      if (transaction.type === 'income') {
+        income += transaction.amount;
+      } else {
+        expenses += Math.abs(transaction.amount);
+      }
+      
+      // Track category data
+      if (!categoryData[transaction.type]) {
+        categoryData[transaction.type] = {};
+      }
+      if (!categoryData[transaction.type]![transaction.category]) {
+        categoryData[transaction.type]![transaction.category] = 0;
+      }
+      categoryData[transaction.type]![transaction.category] += Math.abs(transaction.amount);
+    });
+    
+    return {
+      income,
+      expenses,
+      net: income - expenses,
+      transactionCount: transactions.length,
+      categoryData
+    };
+  }
+
+  public getAvailableMonths(): string[] {
+    const months = [...new Set(this.data.transactions.map(t => t.date.substring(0, 7)))].sort().reverse();
+    return months;
+  }
+
+  public getAllCategories(): string[] {
+    const allCategories = [
+      ...this.data.categories.income,
+      ...this.data.categories.expense
+    ].sort();
+    return allCategories;
+  }
 }
 
 // Utility functions
