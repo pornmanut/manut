@@ -1,0 +1,41 @@
+---
+// Dashboard component for monthly summaries and charts
+---
+<section class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+  <div class="space-y-6">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <h2 class="text-2xl font-semibold text-gray-900">Monthly Dashboard</h2>
+      
+      <!-- Month and Category Filters -->
+      <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+        <select id="month-filter" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          <option value="">All Months</option>
+          <!-- Month options will be populated by JavaScript -->
+        </select>
+        
+        <select id="category-filter" class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+          <option value="">All Categories</option>
+          <!-- Category options will be populated by JavaScript -->
+        </select>
+      </div>
+    </div>
+    
+    <!-- Summary Cards -->
+    <div id="dashboard-summary" class="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2">
+      <!-- Summary cards will be inserted here by JavaScript -->
+      <div class="text-center text-gray-500 col-span-full py-8">
+        No data available. Upload a JSON file, load sample data, or add transactions to get started.
+      </div>
+    </div>
+    
+    <!-- Charts Section -->
+    <div id="dashboard-charts" class="grid gap-6 lg:grid-cols-2">
+      <!-- Charts will be inserted here by JavaScript -->
+    </div>
+    
+    <!-- Category Breakdown -->
+    <div id="category-breakdown" class="space-y-6">
+      <!-- Category breakdown will be inserted here by JavaScript -->
+    </div>
+  </div>
+</section>

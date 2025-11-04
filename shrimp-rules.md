@@ -2,366 +2,294 @@
 
 ## Project Overview
 
-### Astro Blog with Money Management Tool
-- Personal blog built with Astro, TypeScript, and Tailwind CSS
-- Content managed through Astro content collections with Zod validation
-- Money Manager tool with client-side data storage using localStorage
-- Deployed to AWS S3 and CloudFront using AWS SAM
-- Automated deployment via GitHub Actions
+This is an Astro-based blog project with TypeScript support, Tailwind CSS, and integrated tools. The project includes a blog system and a money management tool with modular architecture.
+
+### Technology Stack
+- **Framework**: Astro 5.15.3
+- **Language**: TypeScript 5.9.3
+- **Styling**: Tailwind CSS 4.1.16
+- **Additional**: Zod for validation, Shiki for syntax highlighting
 
 ## Project Architecture
 
 ### Directory Structure
 ```
-/
-├── src/
-│   ├── content/
-│   │   ├── config.ts           # Content collection schema definitions
-│   │   └── blog/               # Blog post markdown files
-│   ├── layouts/
-│   │   └── BaseLayout.astro    # Main layout component
-│   ├── pages/
-│   │   ├── index.astro         # Home page
-│   │   ├── about.astro         # About page
-│   │   ├── blog/
-│   │   │   ├── index.astro     # Blog listing page
-│   │   │   └── [slug].astro    # Individual blog post page
-│   │   └── tools/
-│   │       ├── index.astro     # Tools listing page
-│   │       └── money.astro     # Money Manager tool
-│   ├── scripts/
-│   │   └── money-manager.ts    # Money Manager TypeScript class
-│   └── styles/
-│       └── global.css          # Global styles and markdown styling
-├── template.yaml               # AWS SAM infrastructure definition
-├── samconfig.toml              # SAM deployment configuration
-└── shrimp-rules.md             # This file - AI agent guidelines
+src/
+├── components/          # Astro components organized by feature
+│   ├── money/          # Money management tool components
+│   └── [feature]/      # Other feature components
+├── scripts/            # TypeScript business logic
+│   ├── money-manager.ts    # Core business logic
+│   └── money/              # Money management tool scripts
+├── pages/              # Astro pages and routes
+│   ├── tools/          # Tool pages
+│   └── blog/           # Blog pages
+├── layouts/            # Layout components
+├── styles/             # Global styles
+└── content/            # Content collections
 ```
 
-### Core Components
-- **BaseLayout.astro**: Consistent layout used across all pages with navigation
-- **content/config.ts**: Zod schema definitions for blog posts
-- **scripts/money-manager.ts**: MoneyManager class with localStorage integration
-- **template.yaml**: AWS infrastructure for S3, CloudFront, and deployment
+### Component Architecture Patterns
+- **UI Components**: `.astro` files for HTML structure and templating
+- **Business Logic**: `.ts` files for pure TypeScript code
+- **Feature Organization**: Group related components and scripts by feature
+- **Separation of Concerns**: UI, business logic, and data management in separate files
 
 ## Code Standards
 
-### Astro File Structure
-- Use TypeScript frontmatter with --- delimiters
-- Import statements must be at the top of frontmatter
-- Export interfaces for Props when applicable
-- Use consistent indentation (2 spaces)
-- Import BaseLayout for all pages
+### TypeScript Usage in Astro
+- **Use `<script src="">` for loading TypeScript files from `src/` directory**
+- **Use `import type` for type-only imports in Astro frontmatter**
+- **Keep TypeScript syntax in separate `.ts` files, not inline script tags**
+- **Export classes to global scope for inline script usage**
 
-### TypeScript Integration Patterns
-- **For .astro files importing TypeScript**: Use `import type` for type-only imports
-- **For loading TypeScript files in .astro**: Use `<script src="../../scripts/file.ts"></script>`
-- **For TypeScript classes**: Export to global scope with `(window as any).ClassName = ClassName`
-- **For inline scripts**: Use plain JavaScript, not TypeScript syntax
-- **For TypeScript files in src/**: Astro automatically compiles them to JavaScript
+```typescript
+// Correct: In .ts files
+export interface Transaction {
+  id: string;
+  date: string;
+}
 
-### Money Manager Tool Patterns
-- **Data Storage**: Use localStorage with key 'moneyManagerData'
-- **Data Validation**: Use simplified Zod-like schemas for client-side validation
-- **Class Structure**: Export MoneyManager class with methods for data operations
-- **Global Access**: Export class to window object for inline script usage
-- **Error Handling**: Use try-catch blocks with user-friendly error messages
+export class MoneyManager {
+  // Implementation
+}
 
-### Tailwind CSS Standards
-- Use utility classes for all styling
-- Follow existing color scheme: gray-50, gray-900, blue-600, blue-800
-- Use responsive prefixes: sm:, md:, lg:, xl:
-- Maintain consistent spacing and layout patterns
-- Use custom styles in global.css for markdown content and animations
+// Export to global scope
+(window as any).MoneyManager = MoneyManager;
+```
 
-### Content Standards
-- Blog posts must include: title, pubDate, description
-- Optional fields: author, image, tags, draft
-- Use ISO date format for pubDate
-- Tags must be lowercase with hyphens for multi-word tags
-- Use markdown for content with proper frontmatter
+```astro
+---
+// Correct: In .astro frontmatter
+import type { Transaction } from '../../scripts/money-manager.ts';
+---
+
+<!-- Correct: Load TypeScript file -->
+<script src="../../scripts/money-manager.ts"></script>
+
+<!-- Incorrect: Don't use TypeScript syntax inline -->
+<script type="module">
+  import { MoneyManager } from '../../scripts/money-manager.ts'; // ❌
+  const transaction: Transaction = { ... }; // ❌
+</script>
+```
+
+### File Separation Rules
+- **Split files over 200-300 lines**
+- **Separate UI from business logic**
+- **Group by function, not by file type**
+- **Extract reusable code into separate modules**
+
+### Naming Conventions
+- **Components**: PascalCase (e.g., `Header.astro`, `DataManagement.astro`)
+- **Scripts**: kebab-case (e.g., `ui-controller.ts`, `transaction-controller.ts`)
+- **Classes**: PascalCase (e.g., `MoneyManager`, `UIController`)
+- **Interfaces**: PascalCase with descriptive names (e.g., `UIElements`, `Transaction`)
+- **Functions**: camelCase (e.g., `updateCategories`, `showAddTransactionForm`)
 
 ## Functionality Implementation Standards
 
-### Adding New Pages
-1. Create .astro file in appropriate src/pages/ directory
-2. Import and use BaseLayout component
-3. Include proper title and description props
-4. Follow existing navigation pattern in BaseLayout
+### Component Structure
+```astro
+---
+// Imports at top
+import Component from './Component.astro';
+import type { TypeDefinition } from '../../scripts/types.ts';
 
-### Adding Blog Posts
-1. Create .md file in src/content/blog/
-2. Include required frontmatter fields
-3. Use markdown for content
-4. Add appropriate tags for categorization
+// Props interface if needed
+export interface Props {
+  title: string;
+  description?: string;
+}
 
-### Adding New Tools
-1. Create .astro file in src/pages/tools/
-2. Create corresponding .ts file in src/scripts/
-3. Follow Money Manager pattern for TypeScript integration
-4. Update tools/index.astro to include new tool
-5. Use consistent styling and layout patterns
+const { title, description } = Astro.props;
+---
 
-### Modifying Navigation
-1. Update navigation links in BaseLayout.astro
-2. Ensure all links use relative paths
-3. Test all navigation links after changes
-4. Maintain consistent styling for navigation items
+<!-- HTML structure with semantic elements -->
+<section class="component-class">
+  <!-- Component content -->
+</section>
+
+<!-- Script loading at bottom -->
+<script src="../../scripts/component-controller.ts"></script>
+```
+
+### Controller Pattern
+- **AppController**: Main coordinator that initializes all modules
+- **UIController**: Manages DOM elements and basic UI interactions
+- **Feature Controllers**: Handle specific business logic (e.g., TransactionController)
+- **Utility Classes**: Reusable functionality (e.g., NotificationSystem)
+
+### Event Handling
+- **Use custom events for cross-module communication**
+- **Attach event listeners in AppController**
+- **Export functions to global scope for inline handlers**
+
+```typescript
+// Custom events
+document.dispatchEvent(new CustomEvent('refreshDashboard'));
+document.addEventListener('refreshDashboard', () => {
+  this.dashboardRenderer.render();
+});
+
+// Global exports for inline handlers
+(window as any).editTransaction = (id: string) => this.transactionController.editTransaction(id);
+```
 
 ## Framework/Plugin/Third-party Library Usage Standards
 
-### Astro Framework
-- Use Astro content collections for blog posts
-- Leverage Astro's built-in image optimization
-- Use Astro's getCollection() for content queries
-- Follow Astro's routing conventions
-- Use getStaticPaths() for dynamic routes
+### Astro Integration
+- **Use Astro's automatic TypeScript compilation**
+- **Leverage Astro's component-based architecture**
+- **Use proper import patterns for different file types**
 
-### TypeScript Integration
-- **Script Loading**: Use `<script src="">` for TypeScript files from src/ directory
-- **Type Annotations**: Use proper TypeScript interfaces and types
-- **Class Exports**: Export classes to global scope for inline script usage
-- **Error Handling**: Implement comprehensive error handling with user feedback
-
-### Tailwind CSS
-- Use @tailwindcss/vite plugin (configured in astro.config.mjs)
-- Use @tailwindcss/typography for blog content styling
-- Extend theme only when necessary in tailwind.config.js
-- Use custom CSS in global.css for specific component styles
+### Tailwind CSS Usage
+- **Use utility classes for styling**
+- **Follow responsive design patterns**
+- **Use semantic HTML with appropriate classes**
 
 ### Zod Validation
-- Define schemas in src/content/config.ts
-- Use z.object() for content collection schemas
-- Make optional fields with .optional()
-- Use appropriate Zod types for validation
+- **Use for data validation and type safety**
+- **Define schemas for data structures**
+- **Use in form validation and API responses**
 
 ## Workflow Standards
 
 ### Development Workflow
-1. Run `npm run dev` for local development
-2. Test all changes locally before committing
-3. Build with `npm run build` to verify production build
-4. Preview build with `npm run preview`
+1. **Create components in appropriate feature directories**
+2. **Separate business logic into TypeScript files**
+3. **Use proper import/export patterns**
+4. **Test functionality in browser**
+5. **Ensure proper error handling**
 
-### Content Creation Workflow
-1. Create blog post in src/content/blog/
-2. Include all required frontmatter fields
-3. Test blog post display locally
-4. Verify blog post appears in blog listing
-
-### Tool Development Workflow
-1. Create TypeScript class in src/scripts/
-2. Create corresponding .astro page in src/pages/tools/
-3. Test tool functionality locally
-4. Verify tool appears in tools listing
-5. Test data persistence and validation
-
-### Deployment Workflow
-1. Commit changes to trigger GitHub Actions
-2. Monitor GitHub Actions for deployment status
-3. Verify deployment at production URL
-4. Test all functionality after deployment
+### File Creation Process
+1. **Create .astro component with proper structure**
+2. **Create corresponding .ts controller if needed**
+3. **Add script loading to main page**
+4. **Update AppController if adding new functionality**
+5. **Test integration**
 
 ## Key File Interaction Standards
 
-### Critical File Interactions
-- **src/content/config.ts ↔ src/content/blog/*.md**: When modifying schema, update all blog posts
-- **src/layouts/BaseLayout.astro ↔ src/pages/*.astro**: When changing layout, test all pages
-- **src/scripts/money-manager.ts ↔ src/pages/tools/money.astro**: TypeScript class must match page expectations
-- **template.yaml ↔ samconfig.toml**: When adding resources, ensure SAM capabilities support them
-- **template.yaml ↔ GitHub Actions**: When changing infrastructure, update deployment workflows
+### Money Management Tool Integration
+When modifying money management files, ensure coordination between:
+- **Components**: `src/components/money/`
+- **Scripts**: `src/scripts/money/`
+- **Main Page**: `src/pages/tools/money.astro`
+- **Core Logic**: `src/scripts/money-manager.ts`
 
-### Synchronization Rules
-- When adding new navigation items, update BaseLayout.astro and test all pages
-- When modifying content schema, update all existing blog posts to match
-- When changing Tailwind configuration, verify all styles remain consistent
-- When updating dependencies, test all functionality before deployment
-- When modifying TypeScript classes, ensure all dependent pages are updated
+### Script Loading Dependencies
+When adding new TypeScript modules:
+1. **Add script tag to main page in correct order**
+2. **Ensure dependencies are loaded first**
+3. **Export to global scope if needed for inline usage**
+4. **Update AppController initialization if needed**
+
+### Layout Updates
+When modifying `src/layouts/BaseLayout.astro`:
+- **Maintain consistent navigation structure**
+- **Preserve responsive design patterns**
+- **Ensure proper meta tags and SEO**
 
 ## AI Decision-making Standards
 
-### Priority Order
-1. **Functionality** > Performance > Aesthetics
-2. Always choose solutions that maintain existing patterns
-3. Prefer Astro built-in features over external libraries
-4. For tools, follow Money Manager patterns for consistency
+### File Organization Decisions
+- **Use feature-based organization over type-based**
+- **Create new directories when feature has 3+ related files**
+- **Keep related functionality together**
 
-### Common Decision Patterns
-- **New Page**: Use BaseLayout, follow existing page structure
-- **New Blog Post**: Follow existing frontmatter pattern, use markdown
-- **New Tool**: Create TypeScript class + .astro page, follow Money Manager pattern
-- **Style Changes**: Use Tailwind utilities, maintain existing color scheme
-- **Content Updates**: Update schema first, then update all content files
+### Component vs Script Decisions
+- **Use .astro files for HTML output and templating**
+- **Use .ts files for business logic and data manipulation**
+- **Separate UI concerns from business logic**
 
-### Error Handling
-- Always validate content against Zod schemas
-- Test navigation links after changes
-- Verify responsive design on multiple screen sizes
-- Check console for errors during development
-- For tools, implement user-friendly error notifications
+### Import/Export Decisions
+- **Use `import type` for type-only imports**
+- **Use `<script src="">` for TypeScript files**
+- **Export to global scope only when necessary for inline handlers**
 
 ## Prohibited Actions
 
-### Development Prohibitions
-- **NEVER** modify the build output directory structure
-- **NEVER** change content collection schema without updating all content files
-- **NEVER** use CSS frameworks other than Tailwind CSS
-- **NEVER** hardcode absolute URLs that should be relative
-- **NEVER** modify astro.config.mjs without understanding implications
-- **NEVER** use TypeScript syntax in inline script tags within .astro files
-- **NEVER** manually compile TypeScript files - Astro handles this automatically
+### File Structure
+- **DO NOT** create files under 50 lines (too fragmented)
+- **DO NOT** mix UI and business logic in single files
+- **DO NOT** create unnecessary folder hierarchies
+- **DO NOT** place TypeScript files in public/ directory
 
-### TypeScript Integration Prohibitions
-- **NEVER** import .ts files directly in module scripts within .astro files
-- **NEVER** use type assertions in inline script tags
-- **NEVER** forget to export TypeScript classes to global scope when needed
-- **NEVER** mix TypeScript and JavaScript syntax inappropriately
+### Code Patterns
+- **DO NOT** use TypeScript syntax in inline script tags
+- **DO NOT** manually compile TypeScript files
+- **DO NOT** use `import` statements in inline module scripts
+- **DO NOT** create large monolithic files over 300 lines
 
-### Content Prohibitions
-- **NEVER** create blog posts without required frontmatter fields
-- **NEVER** use inconsistent date formats in pubDate
-- **NEVER** add blog posts without testing display
-- **NEVER** use uppercase tags (must be lowercase)
+### Astro Usage
+- **DO NOT** use `is:inline` directive for files in src/ directory
+- **DO NOT** mix frontmatter and script logic incorrectly
+- **DO NOT** ignore Astro's automatic TypeScript compilation
 
-### Infrastructure Prohibitions
-- **NEVER** hardcode AWS credentials in any file
-- **NEVER** expose S3 bucket publicly
-- **NEVER** disable CloudFront OAC (Origin Access Control)
-- **NEVER** use HTTP for production traffic
-- **NEVER** modify S3 bucket properties outside template.yaml
+### Testing
+- **DO NOT** run `npm run dev` yourself
+- **DO** ask user to test changes
+- **DO** provide clear testing instructions
 
-### Deployment Prohibitions
-- **NEVER** deploy infrastructure changes without running `sam build` first
-- **NEVER** skip CloudFront cache invalidation after frontend updates
-- **NEVER** use different AWS regions across files without explicit coordination
-- **NEVER** modify deployment configuration without testing
+## Implementation Examples
 
-## Required Tools and Commands
+### Correct Component Implementation
+```astro
+---
+import type { Transaction } from '../../scripts/money-manager.ts';
+import { UIController } from '../../scripts/money/ui-controller.ts';
+---
 
-### Development Commands
-```bash
-npm run dev      # Start local development server
-npm run build    # Build for production
-npm run preview  # Preview production build locally
+<section class="transaction-management">
+  <div id="transaction-list"></div>
+  <button id="add-transaction-btn">Add Transaction</button>
+</section>
+
+<script src="../../scripts/money/transaction-controller.ts"></script>
 ```
 
-### SAM Commands
-```bash
-sam build        # Validate and build SAM template
-sam deploy       # Deploy infrastructure changes
+### Correct Controller Implementation
+```typescript
+export class TransactionController {
+  constructor(
+    private moneyManager: MoneyManager,
+    private uiController: UIController
+  ) {}
+
+  addTransaction(): void {
+    // Business logic implementation
+  }
+}
+
+// Export for global usage
+(window as any).TransactionController = TransactionController;
 ```
 
-### AWS CLI Commands
-```bash
-aws s3 sync dist $S3_BUCKET_URL --delete                    # Sync frontend to S3
-aws cloudfront create-invalidation --distribution-id $ID --paths "/*"  # Invalidate cache
+### Correct Script Loading Order
+```astro
+<!-- Core logic first -->
+<script src="../../scripts/money-manager.ts"></script>
+<!-- UI controllers -->
+<script src="../../scripts/money/ui-controller.ts"></script>
+<!-- Feature controllers -->
+<script src="../../scripts/money/transaction-controller.ts"></script>
+<!-- Main coordinator last -->
+<script src="../../scripts/money/app-controller.ts"></script>
 ```
 
 ## Testing Requirements
 
-### Development Testing
-- Always test new pages locally before committing
-- Verify responsive design on mobile and desktop
-- Check all navigation links work correctly
-- Validate blog posts display properly
-- For tools, test all functionality including data persistence
+**ALWAYS ask the user to test the application instead of running `npm run dev` yourself.**
 
-### Content Testing
-- Verify all required frontmatter fields are present
-- Test blog post display and formatting
-- Check blog post appears in blog listing
-- Validate tags display correctly
-
-### Tool Testing
-- Test all tool functionality locally
-- Verify data persistence with localStorage
-- Test error handling and validation
-- Check responsive design on mobile devices
-- Verify tool appears in tools listing
-
-### Deployment Testing
-- Verify website accessibility after deployment
-- Test SSL certificate validity
-- Confirm all pages load without errors
-- Check security headers in browser dev tools
-- Test tool functionality in production environment
-
-## TypeScript Integration Specific Rules
-
-### File Organization
-- **.astro files**: For components and pages that output HTML with templating
-- **.ts files**: For pure TypeScript code without templating, especially tool logic
-- **Separation of concerns**: Keep business logic in .ts files, UI in .astro files
-
-### Import/Export Patterns
-```typescript
-// In .astro frontmatter - use type-only imports
-import type { Transaction } from '../../scripts/money-manager.ts';
-
-// In script tags with src attribute - use .ts extension for files in src/
-<script src="../../scripts/money-manager.ts"></script>
-
-// For files in public/ directory - use is:inline directive
-<script is:inline src="/scripts/money-manager.js"></script>
+Provide clear instructions:
 ```
+Please test the application by running `npm run dev` and navigating to the appropriate page. 
 
-### Class Integration Pattern
-```typescript
-// In .ts file - export class to global scope
-export class MoneyManager {
-  // implementation
-}
+Check that:
+- [Specific functionality 1]
+- [Specific functionality 2]
+- [Any buttons/forms are working]
+- [No console errors]
 
-// Export to global scope for script tag usage
-(window as any).MoneyManager = MoneyManager;
-```
-
-### Script Loading Methods
-1. **For files in src/ directory (Recommended)**:
-   ```astro
-   <script src="../../scripts/money-manager.ts"></script>
-   ```
-   - Astro automatically compiles TypeScript to JavaScript
-   - Supports all TypeScript features
-   - Proper module bundling
-
-2. **For files in public/ directory**:
-   ```astro
-   <script is:inline src="/scripts/money-manager.js"></script>
-   ```
-   - Requires `is:inline` directive
-   - No TypeScript processing (must be pre-compiled)
-   - For external scripts or CDN
-
-### Error Prevention
-- Don't use TypeScript type assertions in inline script tags
-- Don't manually compile TypeScript files - Astro handles this
-- Use proper module imports with correct file extensions
-- Separate concerns: UI in .astro, logic in .ts files
-- Ensure proper timing when accessing globally exported classes
-
-## Money Manager Tool Specific Rules
-
-### Data Management
-- **Storage Key**: Always use 'moneyManagerData' for localStorage
-- **Data Structure**: Follow MoneyData interface with transactions and categories
-- **Validation**: Use TransactionSchema and MoneyDataSchema for validation
-- **Error Handling**: Implement comprehensive error handling with user feedback
-
-### Class Architecture
-- **Singleton Pattern**: Use one instance per page
-- **Method Naming**: Use clear, descriptive method names
-- **Data Operations**: Provide methods for CRUD operations
-- **Utility Functions**: Export helper functions for formatting and file operations
-
-### UI Integration
-- **Global Export**: Always export class to window object
-- **Initialization**: Use retry logic for class availability
-- **Event Handling**: Attach event listeners after DOM is ready
-- **Notifications**: Implement user-friendly notification system
-
-### File Operations
-- **Upload**: Validate file size (max 10MB) and format (.json only)
-- **Download**: Use timestamped filenames for data exports
-- **Sample Data**: Provide sample data for first-time users
-- **Error Messages**: Provide clear, actionable error messages
+Let me know if you encounter any issues or if everything is working as expected.
