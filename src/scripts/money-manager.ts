@@ -92,32 +92,12 @@ export class MoneyManager {
   };
 
   constructor() {
-    this.loadDataFromStorage();
+    // No automatic loading
   }
 
-  private loadDataFromStorage(): void {
-    const stored = localStorage.getItem('moneyManagerData');
-    if (stored) {
-      try {
-        const parsedData = JSON.parse(stored);
-        const validationResult = MoneyDataSchema.safeParse(parsedData);
-        
-        if (validationResult.success) {
-          this.data = validationResult.data;
-        } else {
-          console.error('Invalid data format in storage:', validationResult.error || 'Unknown error');
-          this.clearAllData();
-        }
-      } catch (e) {
-        console.error('Error loading data:', e);
-        this.clearAllData();
-      }
-    }
-  }
 
-  private saveDataToStorage(): void {
-    localStorage.setItem('moneyManagerData', JSON.stringify(this.data));
-  }
+
+
 
   public getData(): MoneyData {
     return this.data;
@@ -149,7 +129,6 @@ export class MoneyManager {
       }
       
       this.data = validationResult.data;
-      this.saveDataToStorage();
     } else {
       throw new Error(`Invalid data format: ${validationResult.error || 'Unknown error'}`);
     }
@@ -160,7 +139,6 @@ export class MoneyManager {
     
     if (validationResult.success) {
       this.data.transactions.push(validationResult.data);
-      this.saveDataToStorage();
     } else {
       throw new Error(`Invalid transaction format: ${validationResult.error || 'Unknown error'}`);
     }
@@ -168,7 +146,6 @@ export class MoneyManager {
 
   public deleteTransaction(id: string): void {
     this.data.transactions = this.data.transactions.filter(t => t.id !== id);
-    this.saveDataToStorage();
   }
 
   public calculateMonthlySummaries(): MonthlySummary[] {
@@ -217,7 +194,6 @@ export class MoneyManager {
         expense: ['Food', 'Transportation', 'Housing', 'Entertainment', 'Utilities', 'Healthcare', 'Other Expenses']
       }
     };
-    this.saveDataToStorage();
   }
 
   // Dashboard helper methods
