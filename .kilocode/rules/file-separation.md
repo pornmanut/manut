@@ -1,3 +1,7 @@
+---
+trigger: always_on
+---
+
 # File Separation Rules
 
 ## 🎯 Main Rule: Keep Files Small

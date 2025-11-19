@@ -1,3 +1,7 @@
+---
+trigger: always_on
+---
+
 # Astro TypeScript Support Rules
 
 ## Key Research Findings
